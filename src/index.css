@@ -1,0 +1,208 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  html {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  body {
+    background-color: #f9fafb;
+    color: #111827;
+    -webkit-font-smoothing: antialiased;
+    font-family: 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo UI', 'MS PGothic', sans-serif;
+  }
+}
+
+/* Custom component styles inspired by SmartHR Design System */
+@layer components {
+  /* Form components */
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors;
+  }
+  
+  .form-input-error {
+    @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+  
+  .form-label-required::after {
+    @apply text-red-500;
+    content: ' *';
+  }
+  
+  .form-error {
+    @apply text-sm text-red-600 mt-1;
+  }
+  
+  /* Button components */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200;
+  }
+  
+  .btn-primary {
+    @apply btn text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500;
+  }
+  
+  .btn-secondary {
+    @apply btn text-gray-700 bg-white border-gray-300 hover:bg-gray-50 focus:ring-blue-500;
+  }
+  
+  .btn-danger {
+    @apply btn text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
+  }
+  
+  .btn-success {
+    @apply btn text-white bg-green-600 hover:bg-green-700 focus:ring-green-500;
+  }
+  
+  .btn-disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+  
+  /* Card components */
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200;
+  }
+  
+  .card-header {
+    @apply px-6 py-4 border-b border-gray-200;
+  }
+  
+  .card-body {
+    @apply px-6 py-4;
+  }
+  
+  .card-footer {
+    @apply px-6 py-4 border-t border-gray-200 bg-gray-50;
+  }
+  
+  /* Navigation components */
+  .nav-tab {
+    @apply px-4 py-2 text-sm font-medium rounded-md transition-colors;
+  }
+  
+  .nav-tab-active {
+    @apply nav-tab bg-blue-100 text-blue-700;
+  }
+  
+  .nav-tab-inactive {
+    @apply nav-tab text-gray-500 hover:text-gray-700 hover:bg-gray-100;
+  }
+  
+  /* Alert components */
+  .alert {
+    @apply p-4 rounded-md;
+  }
+  
+  .alert-info {
+    @apply alert bg-blue-50 text-blue-800 border border-blue-200;
+  }
+  
+  .alert-warning {
+    @apply alert bg-yellow-50 text-yellow-800 border border-yellow-200;
+  }
+  
+  .alert-error {
+    @apply alert bg-red-50 text-red-800 border border-red-200;
+  }
+  
+  .alert-success {
+    @apply alert bg-green-50 text-green-800 border border-green-200;
+  }
+  
+  /* Wizard components */
+  .wizard-step {
+    @apply flex items-center;
+  }
+  
+  .wizard-step-number {
+    @apply flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium;
+  }
+  
+  .wizard-step-active .wizard-step-number {
+    @apply bg-blue-600 text-white;
+  }
+  
+  .wizard-step-completed .wizard-step-number {
+    @apply bg-green-600 text-white;
+  }
+  
+  .wizard-step-inactive .wizard-step-number {
+    @apply bg-gray-300 text-gray-600;
+  }
+  
+  .wizard-step-line {
+    @apply flex-1 h-px bg-gray-300 mx-4;
+  }
+  
+  .wizard-step-active .wizard-step-line,
+  .wizard-step-completed .wizard-step-line {
+    @apply bg-blue-600;
+  }
+}
+
+/* Utility classes */
+@layer utilities {
+  .text-required {
+    @apply text-red-500;
+  }
+  
+  .shadow-card {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+  
+  .shadow-card-hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  /* Animation utilities */
+  .animate-in {
+    animation: enter 0.3s ease-out;
+  }
+  
+  .zoom-in-95 {
+    animation: zoom-in-95 0.3s ease-out;
+  }
+  
+  .duration-300 {
+    transition-duration: 300ms;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Keyframes */
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes zoom-in-95 {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
