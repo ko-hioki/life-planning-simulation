@@ -1,13 +1,15 @@
 import React from 'react';
 import type { BaseComponentProps, FormFieldProps } from '../../types';
 
-// Button Component
+// Button Component - SmartHRデザインシステム準拠
 interface ButtonProps extends BaseComponentProps {
-  variant?: 'primary' | 'secondary' | 'danger' | 'success';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'success' | 'warning';
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
   onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void;
+  icon?: React.ReactNode;
+  fullWidth?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -18,26 +20,30 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   type = 'button',
   onClick,
+  icon,
+  fullWidth = false,
 }) => {
   const baseClasses = 'btn';
   const variantClasses = {
     primary: 'btn-primary',
     secondary: 'btn-secondary',
+    outline: 'btn-outline',
     danger: 'btn-danger',
     success: 'btn-success',
+    warning: 'btn-warning',
   };
   
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-sm',
-    lg: 'px-6 py-3 text-lg',
+    sm: 'btn-sm',
+    md: '',
+    lg: 'btn-lg',
   };
 
   const classes = [
     baseClasses,
     variantClasses[variant],
     sizeClasses[size],
-    disabled ? 'btn-disabled' : '',
+    fullWidth ? 'w-full' : '',
     className,
   ].filter(Boolean).join(' ');
 
@@ -47,7 +53,9 @@ export const Button: React.FC<ButtonProps> = ({
       className={classes}
       disabled={disabled}
       onClick={onClick}
+      aria-disabled={disabled}
     >
+      {icon && <span className="mr-2" aria-hidden="true">{icon}</span>}
       {children}
     </button>
   );
@@ -221,11 +229,12 @@ export const Select: React.FC<SelectProps> = ({
   );
 };
 
-// Checkbox Field Component
+// Checkbox Field Component - SmartHRデザインシステム準拠
 interface CheckboxFieldProps extends FormFieldProps {
   checked?: boolean;
   onChange?: (checked: boolean) => void;
   onBlur?: () => void;
+  description?: string;
 }
 
 export const CheckboxField: React.FC<CheckboxFieldProps> = ({
@@ -236,24 +245,37 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
   checked = false,
   onChange,
   onBlur,
+  description,
   className = '',
 }) => {
   const showError = touched && error;
 
   return (
     <div className={`mb-4 ${className}`}>
-      <label className="flex items-center">
+      <label className="flex items-start">
         <input
           type="checkbox"
           checked={checked}
-          className="form-checkbox h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+          style={{
+            accentColor: 'var(--color-smarthr-blue)',
+            borderColor: 'var(--color-border-primary)',
+          }}
           onChange={(e) => onChange?.(e.target.checked)}
           onBlur={onBlur}
         />
-        <span className={`ml-2 text-sm font-medium text-gray-700 ${required ? 'text-required' : ''}`}>
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </span>
+        <div className="ml-3">
+          <span className={`block text-sm font-medium ${required ? 'text-required' : ''}`}
+                style={{ color: 'var(--color-text-primary)' }}>
+            {label}
+            {required && <span className="text-required ml-1">*</span>}
+          </span>
+          {description && (
+            <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              {description}
+            </span>
+          )}
+        </div>
       </label>
       {showError && (
         <div className="form-error mt-1">{error}</div>
@@ -262,11 +284,12 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
   );
 };
 
-// Card Component
+// Card Component - SmartHRデザインシステム準拠
 interface CardProps extends BaseComponentProps {
   header?: React.ReactNode;
   footer?: React.ReactNode;
   onClick?: () => void;
+  hover?: boolean;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -275,10 +298,18 @@ export const Card: React.FC<CardProps> = ({
   footer,
   className = '',
   onClick,
+  hover = true,
 }) => {
+  const cardClasses = [
+    'card',
+    hover ? 'hover-lift' : '',
+    onClick ? 'cursor-pointer' : '',
+    className,
+  ].filter(Boolean).join(' ');
+
   return (
     <div 
-      className={`card ${className}`}
+      className={cardClasses}
       onClick={onClick}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
@@ -288,6 +319,10 @@ export const Card: React.FC<CardProps> = ({
           onClick();
         }
       } : undefined}
+      style={{
+        backgroundColor: 'var(--color-bg-primary)',
+        borderColor: 'var(--color-border-primary)',
+      }}
     >
       {header && (
         <div className="card-header">
@@ -306,11 +341,12 @@ export const Card: React.FC<CardProps> = ({
   );
 };
 
-// Alert Component
+// Alert Component - SmartHRデザインシステム準拠
 interface AlertProps extends BaseComponentProps {
   variant?: 'info' | 'warning' | 'error' | 'success';
   title?: string;
   onClose?: () => void;
+  icon?: React.ReactNode;
 }
 
 export const Alert: React.FC<AlertProps> = ({
@@ -318,6 +354,7 @@ export const Alert: React.FC<AlertProps> = ({
   variant = 'info',
   title,
   onClose,
+  icon,
   className = '',
 }) => {
   const variantClasses = {
@@ -327,6 +364,29 @@ export const Alert: React.FC<AlertProps> = ({
     success: 'alert-success',
   };
 
+  const defaultIcons = {
+    info: (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+      </svg>
+    ),
+    success: (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+      </svg>
+    ),
+    warning: (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+      </svg>
+    ),
+    error: (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+      </svg>
+    ),
+  };
+
   const classes = [
     'alert',
     variantClasses[variant],
@@ -334,11 +394,14 @@ export const Alert: React.FC<AlertProps> = ({
   ].filter(Boolean).join(' ');
 
   return (
-    <div className={classes}>
+    <div className={classes} role="alert">
       <div className="flex">
-        <div className="flex-1">
+        <div className="flex-shrink-0">
+          {icon || defaultIcons[variant]}
+        </div>
+        <div className="ml-3 flex-1">
           {title && (
-            <h3 className="text-sm font-medium mb-1">
+            <h3 className="text-sm font-semibold mb-1">
               {title}
             </h3>
           )}
@@ -347,13 +410,13 @@ export const Alert: React.FC<AlertProps> = ({
           </div>
         </div>
         {onClose && (
-          <div className="ml-4">
+          <div className="ml-4 flex-shrink-0">
             <button
               type="button"
-              className="text-gray-400 hover:text-gray-600"
+              className="inline-flex rounded-md p-1.5 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-smarthr-blue transition-colors duration-200"
               onClick={onClose}
+              aria-label="閉じる"
             >
-              <span className="sr-only">閉じる</span>
               <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>

@@ -2,156 +2,623 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base styles */
+/* SmartHRデザインシステム準拠のベーススタイル */
 @layer base {
-  html {
-    font-size: 1rem;
-    line-height: 1.5;
+  :root {
+    /* SmartHR公式カラーパレット（正確な色） */
+    --color-smarthr-blue: #00c4cc;
+    --color-smarthr-black: #23221f;
+    --color-smarthr-orange: #ff9900;
+    --color-smarthr-white: #ffffff;
+    
+    /* Extended Colors - Stone */
+    --color-stone-01: #f8f7f6;
+    --color-stone-02: #edebe6;
+    --color-stone-03: #aaa69f;
+    --color-stone-04: #4e4c49;
+    
+    /* Extended Colors - Aqua */
+    --color-aqua-01: #d4f4f5;
+    --color-aqua-02: #69d9de;
+    --color-aqua-03: #12abb1;
+    --color-aqua-04: #0f7f85;
+    
+    /* Extended Colors - Sakura */
+    --color-sakura-01: #f9e9f7;
+    --color-sakura-02: #f8b2e1;
+    --color-sakura-03: #d362af;
+    --color-sakura-04: #82407c;
+    
+    /* Extended Colors - Momiji */
+    --color-momiji-01: #ffe7e5;
+    --color-momiji-02: #ff9e9c;
+    --color-momiji-03: #ec5a55;
+    --color-momiji-04: #a53f3f;
+    
+    /* Extended Colors - Sky */
+    --color-sky-01: #ddf2fb;
+    --color-sky-02: #8fe2fc;
+    --color-sky-03: #32b7f0;
+    --color-sky-04: #1376a0;
+    
+    /* Extended Colors - Grass */
+    --color-grass-01: #e6f2c8;
+    --color-grass-02: #aee26b;
+    --color-grass-03: #3dcc65;
+    --color-grass-04: #378445;
+    
+    /* Semantic colors */
+    --color-text-primary: #23221f;
+    --color-text-secondary: #4e4c49;
+    --color-text-tertiary: #aaa69f;
+    --color-text-inverse: #ffffff;
+    --color-text-link: #00c4cc;
+    --color-text-success: #3dcc65;
+    --color-text-warning: #ff9900;
+    --color-text-danger: #ec5a55;
+    
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f8f7f6;
+    --color-bg-tertiary: #edebe6;
+    --color-bg-brand: #00c4cc;
+    --color-bg-success: #e6f2c8;
+    --color-bg-warning: #faf2d0;
+    --color-bg-danger: #ffe7e5;
+    
+    --color-border-primary: #edebe6;
+    --color-border-secondary: #aaa69f;
+    --color-border-focus: #00c4cc;
+    
+    /* Spacing scale (8px grid) */
+    --spacing-xs: 0.25rem;   /* 4px */
+    --spacing-sm: 0.5rem;    /* 8px */
+    --spacing-md: 1rem;      /* 16px */
+    --spacing-lg: 1.5rem;    /* 24px */
+    --spacing-xl: 2rem;      /* 32px */
+    --spacing-2xl: 3rem;     /* 48px */
+    --spacing-3xl: 4rem;     /* 64px */
+    
+    /* Border radius */
+    --radius-sm: 0.25rem;    /* 4px */
+    --radius-md: 0.375rem;   /* 6px */
+    --radius-lg: 0.5rem;     /* 8px */
+    --radius-xl: 0.75rem;    /* 12px */
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-button-hover: 0 2px 4px rgba(0, 0, 0, 0.15);
+    --shadow-form-focus: 0 0 0 3px rgba(0, 196, 204, 0.1);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease-out;
+    --transition-normal: 0.2s ease-out;
+    --transition-slow: 0.3s ease-out;
   }
-  
-  body {
-    background-color: #f9fafb;
-    color: #111827;
+
+  /* ベースタイポグラフィ（SmartHR風） */
+  html {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    font-family: 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo UI', 'MS PGothic', sans-serif;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* フォーカススタイル（アクセシビリティ対応） */
+  *:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* 選択テキストのスタイル */
+  ::selection {
+    background-color: rgba(0, 196, 204, 0.15);
+    color: var(--color-text-primary);
   }
 }
 
-/* Custom component styles inspired by SmartHR Design System */
 @layer components {
-  /* Form components */
-  .form-input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors;
-  }
-  
-  .form-input-error {
-    @apply border-red-500 focus:ring-red-500 focus:border-red-500;
-  }
-  
-  .form-label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
-  }
-  
-  .form-label-required::after {
-    @apply text-red-500;
-    content: ' *';
-  }
-  
-  .form-error {
-    @apply text-sm text-red-600 mt-1;
-  }
-  
-  /* Button components */
+  /* SmartHR風ボタンコンポーネント */
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease-out;
+    min-height: 2.5rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    line-height: 1.5;
+    text-decoration: none;
+    user-select: none;
+    white-space: nowrap;
+    position: relative;
+    box-shadow: var(--shadow-button);
   }
-  
+
+  .btn:hover {
+    box-shadow: var(--shadow-button-hover);
+    transform: translateY(-1px);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ボタンバリエーション */
   .btn-primary {
-    @apply btn text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500;
+    background-color: var(--color-smarthr-blue);
+    color: var(--color-smarthr-white);
+    border-color: var(--color-smarthr-blue);
   }
-  
+
+  .btn-primary:hover {
+    background-color: var(--color-aqua-04);
+    border-color: var(--color-aqua-04);
+  }
+
   .btn-secondary {
-    @apply btn text-gray-700 bg-white border-gray-300 hover:bg-gray-50 focus:ring-blue-500;
+    background-color: var(--color-smarthr-white);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-secondary);
   }
-  
+
+  .btn-secondary:hover {
+    background-color: var(--color-stone-01);
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    color: var(--color-smarthr-blue);
+    border-color: var(--color-smarthr-blue);
+  }
+
+  .btn-outline:hover {
+    background-color: var(--color-aqua-01);
+  }
+
   .btn-danger {
-    @apply btn text-white bg-red-600 hover:bg-red-700 focus:ring-red-500;
+    background-color: var(--color-momiji-03);
+    color: var(--color-smarthr-white);
+    border-color: var(--color-momiji-03);
   }
-  
+
+  .btn-danger:hover {
+    background-color: var(--color-momiji-04);
+    border-color: var(--color-momiji-04);
+  }
+
   .btn-success {
-    @apply btn text-white bg-green-600 hover:bg-green-700 focus:ring-green-500;
+    background-color: var(--color-grass-03);
+    color: var(--color-smarthr-white);
+    border-color: var(--color-grass-03);
   }
-  
-  .btn-disabled {
-    @apply opacity-50 cursor-not-allowed;
+
+  .btn-success:hover {
+    background-color: var(--color-grass-04);
+    border-color: var(--color-grass-04);
   }
-  
-  /* Card components */
+
+  .btn-warning {
+    background-color: var(--color-smarthr-orange);
+    color: var(--color-smarthr-white);
+    border-color: var(--color-smarthr-orange);
+  }
+
+  .btn-warning:hover {
+    background-color: #e68a00;
+    border-color: #e68a00;
+  }
+
+  /* ボタンサイズ */
+  .btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    min-height: 2rem;
+  }
+
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    min-height: 3rem;
+  }
+
+  /* SmartHR風カードコンポーネント */
   .card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200;
+    background-color: var(--color-bg-primary);
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border-primary);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: all var(--transition-normal);
   }
-  
+
+  .card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
   .card-header {
-    @apply px-6 py-4 border-b border-gray-200;
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--color-border-primary);
   }
-  
+
+  .card-content {
+    padding: 1.5rem;
+  }
+
   .card-body {
-    @apply px-6 py-4;
+    padding: 1.5rem;
   }
-  
+
   .card-footer {
-    @apply px-6 py-4 border-t border-gray-200 bg-gray-50;
+    padding: 1rem 1.5rem 1.5rem;
+    border-top: 1px solid var(--color-border-primary);
+    background-color: var(--color-bg-secondary);
   }
-  
-  /* Navigation components */
-  .nav-tab {
-    @apply px-4 py-2 text-sm font-medium rounded-md transition-colors;
+
+  /* SmartHR風フォームコンポーネント */
+  .form-control {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: 0.375rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease-out;
+    color: var(--color-text-primary);
+    min-height: 2.5rem;
   }
-  
-  .nav-tab-active {
-    @apply nav-tab bg-blue-100 text-blue-700;
+
+  .form-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border-primary);
+    border-radius: 0.375rem;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    transition: all 0.2s ease-out;
   }
-  
-  .nav-tab-inactive {
-    @apply nav-tab text-gray-500 hover:text-gray-700 hover:bg-gray-100;
+
+  .form-control:focus,
+  .form-input:focus {
+    outline: none;
+    border-color: var(--color-border-focus);
+    box-shadow: var(--shadow-form-focus);
   }
-  
-  /* Alert components */
+
+  .form-control:disabled,
+  .form-input:disabled {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-tertiary);
+    cursor: not-allowed;
+  }
+
+  .form-control.error,
+  .form-input-error {
+    border-color: var(--color-momiji-03);
+    box-shadow: 0 0 0 3px rgba(236, 90, 85, 0.1);
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .form-label-required::after {
+    content: ' *';
+    color: var(--color-momiji-03);
+  }
+
+  .form-error {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--color-momiji-03);
+  }
+
+  .form-help {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  /* SmartHR風アラートコンポーネント */
   .alert {
-    @apply p-4 rounded-md;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    border-left: 4px solid;
+    position: relative;
+    background-color: var(--color-bg-primary);
   }
-  
+
   .alert-info {
-    @apply alert bg-blue-50 text-blue-800 border border-blue-200;
+    background-color: var(--color-sky-01);
+    border-color: var(--color-sky-03);
+    color: var(--color-sky-04);
   }
-  
-  .alert-warning {
-    @apply alert bg-yellow-50 text-yellow-800 border border-yellow-200;
-  }
-  
-  .alert-error {
-    @apply alert bg-red-50 text-red-800 border border-red-200;
-  }
-  
+
   .alert-success {
-    @apply alert bg-green-50 text-green-800 border border-green-200;
+    background-color: var(--color-grass-01);
+    border-color: var(--color-grass-03);
+    color: var(--color-grass-04);
   }
-  
-  /* Wizard components */
+
+  .alert-warning {
+    background-color: #faf2d0;
+    border-color: var(--color-smarthr-orange);
+    color: #f56121;
+  }
+
+  .alert-error {
+    background-color: var(--color-momiji-01);
+    border-color: var(--color-momiji-03);
+    color: var(--color-momiji-04);
+  }
+
+  /* プログレスバー（SmartHR風） */
+  .progress {
+    width: 100%;
+    background-color: var(--color-bg-tertiary);
+    border-radius: 9999px;
+    height: 0.5rem;
+  }
+
+  .progress-bar {
+    height: 0.5rem;
+    border-radius: 9999px;
+    transition: all 0.3s ease-out;
+    background-color: var(--color-smarthr-blue);
+  }
+
+  /* SmartHR風バッジ/チップ */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .badge-primary {
+    background-color: var(--color-aqua-01);
+    color: var(--color-aqua-04);
+  }
+
+  .badge-secondary {
+    background-color: var(--color-stone-02);
+    color: var(--color-stone-04);
+  }
+
+  .badge-success {
+    background-color: var(--color-grass-01);
+    color: var(--color-grass-04);
+  }
+
+  .badge-warning {
+    background-color: #faf2d0;
+    color: #f56121;
+  }
+
+  .badge-error {
+    background-color: var(--color-momiji-01);
+    color: var(--color-momiji-04);
+  }
+
+  /* ナビゲーションコンポーネント */
+  .nav-tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease-out;
+  }
+
+  .nav-tab-active {
+    background-color: var(--color-aqua-01);
+    color: var(--color-smarthr-blue);
+  }
+
+  .nav-tab-inactive {
+    color: var(--color-text-secondary);
+  }
+
+  .nav-tab-inactive:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-stone-01);
+  }
+
+  /* ウィザードコンポーネント */
   .wizard-step {
-    @apply flex items-center;
+    display: flex;
+    align-items: center;
   }
-  
+
   .wizard-step-number {
-    @apply flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    font-size: 0.875rem;
+    font-weight: 500;
   }
-  
+
   .wizard-step-active .wizard-step-number {
-    @apply bg-blue-600 text-white;
+    background-color: var(--color-smarthr-blue);
+    color: var(--color-smarthr-white);
   }
-  
+
   .wizard-step-completed .wizard-step-number {
-    @apply bg-green-600 text-white;
+    background-color: var(--color-grass-03);
+    color: var(--color-smarthr-white);
   }
-  
+
   .wizard-step-inactive .wizard-step-number {
-    @apply bg-gray-300 text-gray-600;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-tertiary);
   }
-  
+
   .wizard-step-line {
-    @apply flex-1 h-px bg-gray-300 mx-4;
+    flex: 1;
+    height: 1px;
+    background-color: var(--color-border-primary);
+    margin: 0 1rem;
   }
-  
+
   .wizard-step-active .wizard-step-line,
   .wizard-step-completed .wizard-step-line {
-    @apply bg-blue-600;
+    background-color: var(--color-smarthr-blue);
+  }
+
+  /* モーダル/ダイアログ */
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.2s ease-out;
+  }
+
+  .modal-content {
+    position: relative;
+    background-color: var(--color-bg-primary);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-lg);
+    max-width: 32rem;
+    width: 100%;
+    margin: 0 1rem;
+    max-height: 100vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+  }
+
+  /* アニメーションクラス */
+  .animate-fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  .animate-in {
+    animation: enter 0.3s ease-out;
+  }
+
+  .zoom-in-95 {
+    animation: zoom-in-95 0.3s ease-out;
+  }
+
+  /* ホバーエフェクト */
+  .hover-lift {
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* フォーカス表示の改善 */
+  .focus-ring:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-border-focus);
+  }
+
+  /* SmartHR風セクション見出し */
+  .section-heading {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border-primary);
+  }
+
+  /* テキストスタイル */
+  .text-muted {
+    color: var(--color-text-secondary);
+  }
+
+  .text-subtle {
+    color: var(--color-text-tertiary);
+  }
+
+  .text-required {
+    color: var(--color-momiji-03);
+  }
+
+  /* レスポンシブデザイン調整 */
+  @media (max-width: 640px) {
+    .btn {
+      font-size: 0.75rem;
+      padding: 0.375rem 0.75rem;
+    }
+    
+    .card-header,
+    .card-content,
+    .card-body,
+    .card-footer {
+      padding: 1rem;
+    }
+    
+    .form-control,
+    .form-input {
+      font-size: 0.875rem;
+    }
   }
 }
 
 /* Utility classes */
 @layer utilities {
   .text-required {
-    @apply text-red-500;
+    color: var(--color-momiji-03);
   }
   
   .shadow-card {
