@@ -44,30 +44,30 @@ function App() {
   // ローディング状態
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto mb-6"></div>
-            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-blue-100 animate-pulse mx-auto"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-smarthr-blue mx-auto mb-6"></div>
+            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-gray-100 animate-pulse mx-auto"></div>
           </div>
-          <h2 className="text-xl font-semibold text-gray-700 mb-2">読み込み中</h2>
-          <p className="text-gray-500">データを準備しています...</p>
+          <h2 className="text-xl font-semibold text-smarthr-black mb-2">読み込み中</h2>
+          <p className="text-gray-600">データを準備しています...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gray-50">
       {/* ウィザード表示 */}
       {showCreateForm && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-start justify-center p-4 overflow-y-auto"
           role="dialog"
           aria-modal="true"
           aria-labelledby="wizard-title"
         >
-          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-300">
+          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full my-8 animate-in zoom-in-95 duration-300">
             <LifePlanWizard
               onComplete={handleSavePlan}
               onCancel={handleCancelForm}
@@ -80,7 +80,7 @@ function App() {
       {/* 詳細モーダル */}
       {selectedPlan && showDetailModal && simulationResults && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black bg-opacity-75 z-40 flex items-start justify-center p-4 overflow-y-auto"
           role="dialog"
           aria-modal="true"
           aria-labelledby="detail-modal-title"
@@ -90,7 +90,7 @@ function App() {
             }
           }}
         >
-          <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-300">
+          <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full my-8 animate-in zoom-in-95 duration-300">
             <div className="p-4 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <h2 id="detail-modal-title" className="text-xl sm:text-2xl font-bold text-gray-900 line-clamp-2">
                 {selectedPlan.name}
@@ -114,14 +114,14 @@ function App() {
       )}
 
       {/* ヘッダー */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-200 sticky top-0 z-30">
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-smarthr-blue to-smarthr-blue rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">💰</span>
               </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold text-smarthr-black">
                 ライフプランニングシミュレーター
               </h1>
             </div>
@@ -129,7 +129,7 @@ function App() {
               <Button
                 variant="primary"
                 onClick={handleCreatePlan}
-                className="rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                className="shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 <span className="mr-2">✨</span>
                 新規プラン作成

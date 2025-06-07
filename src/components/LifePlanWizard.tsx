@@ -328,16 +328,16 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* ウィザードヘッダー */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-2xl">
+    <div className="w-full h-full flex flex-col">
+      {/* ウィザードヘッダー（固定） */}
+      <div className="bg-gradient-to-r from-smarthr-blue to-aqua-03 text-white p-6 rounded-t-xl shrink-0">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
               <span className="text-2xl">{wizardSteps[currentStep]?.icon || '📋'}</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-2xl font-bold text-white">
                 {initialData ? 'ライフプラン編集' : 'ライフプラン作成'}
               </h1>
               <p className="text-blue-100 text-sm">
@@ -348,7 +348,7 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
           <Button
             variant="secondary"
             onClick={onCancel}
-            className="text-gray-700 bg-white hover:bg-gray-50"
+            className="text-smarthr-black bg-white hover:bg-gray-50"
           >
             <span className="mr-1">✕</span>
             キャンセル
@@ -358,14 +358,14 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
         {/* プログレスバー */}
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-blue-100">
+            <span className="text-sm font-medium text-white">
               {wizardSteps[currentStep]?.title}
             </span>
-            <span className="text-sm text-blue-200">
+            <span className="text-sm text-blue-100">
               {Math.round(progress * 100)}% 完了
             </span>
           </div>
-          <div className="w-full bg-blue-500 bg-opacity-30 rounded-full h-2">
+          <div className="w-full bg-white bg-opacity-30 rounded-full h-2">
             <div
               className="bg-white h-2 rounded-full transition-all duration-300 ease-out"
               style={{ width: `${progress * 100}%` }}
@@ -378,8 +378,8 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
         </p>
       </div>
 
-      {/* メインコンテンツ */}
-      <div className="bg-white rounded-b-2xl shadow-xl">
+      {/* メインコンテンツ（スクロール可能） */}
+      <div className="bg-white rounded-b-xl shadow-xl flex-1 overflow-y-auto">
         <div className="p-6">
           {error && (
             <Alert variant="error" className="mb-6">
