@@ -39,7 +39,7 @@ export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
   };
 
   const handleInputChange = (field: keyof SimulationParameters, value: string | number) => {
-    let processedValue: any = value;
+    let processedValue: number | undefined = value as number;
     
     if (typeof value === 'string') {
       if (field === 'simulationStartYear' || field === 'simulationEndYear') {

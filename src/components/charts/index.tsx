@@ -212,7 +212,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
     ).sort();
 
     const chartData = allYears.map(year => {
-      const yearData: any = { year };
+      const yearData: Record<string, number | null> = { year };
       data.forEach(plan => {
         const result = plan.results.find(r => r.year === year);
         yearData[plan.planId] = result?.cumulativeAssets || null;
@@ -227,9 +227,10 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
           <XAxis dataKey="year" />
           <YAxis tickFormatter={formatCurrency} />
           <Tooltip 
-            formatter={(value: any, name: string) => {
-              if (value === null) return ['データなし', name];
-              return [formatCurrency(Number(value)), data.find(d => d.planId === name)?.planName || name];
+            formatter={(value: string | number | (string | number)[], name: string) => {
+              if (value === null || value === undefined) return ['データなし', name];
+              const numValue = typeof value === 'number' ? value : Number(value);
+              return [formatCurrency(numValue), data.find(d => d.planId === name)?.planName || name];
             }}
             labelFormatter={(year: number) => `${year}年`}
           />

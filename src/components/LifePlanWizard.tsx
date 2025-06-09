@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useWizard } from '../hooks';
 import { Wizard } from './wizard';
 import { 
@@ -10,7 +10,7 @@ import {
   ReviewForm 
 } from './forms';
 import { Button, Alert } from './ui';
-import type { UserInfo, Income, Expenses, Child, SimulationParameters, LifePlan } from '../types';
+import type { UserInfo, Income, Expenses, Child, SimulationParameters, LifePlan, WizardStep } from '../types';
 
 interface LifePlanWizardProps {
   onComplete: (lifePlan: LifePlan) => void;
@@ -24,7 +24,7 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
   initialData,
 }) => {
   // ウィザードステップの定義
-  const wizardSteps = [
+  const wizardSteps = useMemo(() => [
     { 
       id: 'basic-info', 
       title: '基本情報', 
@@ -74,7 +74,7 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
       component: ReviewForm,
       isCompleted: false,
     },
-  ];
+  ], []);
 
   // ウィザードの状態管理
   const {
@@ -355,7 +355,7 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
 
           <div className="bg-white rounded-xl shadow-xl p-6 sm:p-8">
             <Wizard
-              steps={wizardSteps}
+              steps={wizardSteps as unknown as WizardStep[]}
               currentStep={currentStep}
               onStepChange={goToStep}
               onNext={nextStep}

@@ -91,11 +91,11 @@ export const useFormValidation = <T>(
 ) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // データ変更時に自動バリデーション（validatorは依存配列に含めない）
+  // データ変更時に自動バリデーション
   useEffect(() => {
     const validationErrors = validator(data);
     setErrors(validationErrors);
-  }, [data]);
+  }, [data, validator]);
 
   // 手動バリデーション実行
   const validate = useCallback((dataToValidate?: T) => {
@@ -103,7 +103,7 @@ export const useFormValidation = <T>(
     const validationErrors = validator(targetData);
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
-  }, [data]);
+  }, [data, validator]);
 
   const isValid = Object.keys(errors).length === 0;
 

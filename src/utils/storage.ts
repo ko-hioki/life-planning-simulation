@@ -153,7 +153,7 @@ export class StorageManager {
   /**
    * データマイグレーション
    */
-  private static migrateData(oldData: any): LifePlan[] {
+  private static migrateData(oldData: StorageData): LifePlan[] {
     // 将来のバージョンアップ時のマイグレーション処理
     console.log('Migrating data from version:', oldData.version, 'to', STORAGE_VERSION);
     return oldData.lifePlans || [];
@@ -162,12 +162,15 @@ export class StorageManager {
   /**
    * ストレージデータの検証
    */
-  private static validateStorageData(data: any): boolean {
+  private static validateStorageData(data: unknown): data is { lifePlans: LifePlan[]; version: string } {
     return (
-      data &&
+      data !== null &&
       typeof data === 'object' &&
-      Array.isArray(data.lifePlans) &&
-      typeof data.version === 'string'
+      data !== undefined &&
+      'lifePlans' in data &&
+      Array.isArray((data as Record<string, unknown>).lifePlans) &&
+      'version' in data &&
+      typeof (data as Record<string, unknown>).version === 'string'
     );
   }
 }
@@ -197,7 +200,7 @@ export const checkStorageQuota = (): { used: number; available: number; percenta
   try {
     // 使用量計算
     for (const key in localStorage) {
-      if (localStorage.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
         used += localStorage[key].length;
       }
     }

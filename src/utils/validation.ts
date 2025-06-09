@@ -44,7 +44,7 @@ export class Validator {
   /**
    * 必須フィールドチェック
    */
-  required(field: string, value: any, label: string): void {
+  required(field: string, value: unknown, label: string): void {
     if (value === null || value === undefined || value === '') {
       this.addError(field, `${label}は必須項目です`);
     }

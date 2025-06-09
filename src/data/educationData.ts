@@ -177,7 +177,7 @@ export const educationPeriods = {
 
 // 子どもの教育費年次計算
 export const calculateChildEducationCostByYear = (
-  child: { birthYear: number; educationPath: any },
+  child: { birthYear: number; educationPath: import('../types').EducationPath },
   targetYear: number
 ): number => {
   const childAge = targetYear - child.birthYear;

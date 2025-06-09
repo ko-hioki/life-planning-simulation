@@ -120,7 +120,12 @@ export interface WizardStep {
   id: string;
   title: string;
   description: string;
-  component: React.ComponentType<any>;
+  component: React.ComponentType<{
+    data: UserInfo | Income | Expenses | Child[] | Assets | Pension | Record<string, unknown>;
+    onUpdate: (data: Record<string, unknown>) => void;
+    isValid: boolean;
+    onValidationChange: (isValid: boolean) => void;
+  }>;
   isCompleted: boolean;
   isOptional?: boolean;
 }

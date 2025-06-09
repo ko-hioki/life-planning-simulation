@@ -46,9 +46,9 @@ export const ChildrenInfoForm: React.FC<ChildrenInfoFormProps> = ({
   }, [data, onUpdate]);
 
   // 子供の情報を更新
-  const updateChild = useCallback((childId: string, field: keyof Child, value: any) => {
+  const updateChild = useCallback((childId: string, field: keyof Child, value: string | number) => {
     // 文字列フィールドで空文字列の場合はundefinedに変換
-    let processedValue: any = value;
+    let processedValue: string | number | undefined = value;
     if (typeof value === 'string' && value === '' && field === 'name') {
       processedValue = undefined;
     }
@@ -76,7 +76,7 @@ export const ChildrenInfoForm: React.FC<ChildrenInfoFormProps> = ({
   }, [data, onUpdate]);
 
   // 教育パスを更新
-  const updateEducationPath = useCallback((childId: string, field: keyof EducationPath, value: any) => {
+  const updateEducationPath = useCallback((childId: string, field: keyof EducationPath, value: string | boolean) => {
     const updatedData = data.map(child => 
       child.id === childId 
         ? { ...child, educationPath: { ...child.educationPath, [field]: value } }
