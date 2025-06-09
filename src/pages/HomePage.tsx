@@ -14,6 +14,78 @@ export function HomePage() {
   const [selectedPlan, setSelectedPlan] = useState<LifePlan | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
 
+  // モーダル開閉時にbodyのスクロールを制御
+  useEffect(() => {
+    if (showDetailModal) {
+      // スクロールバーの幅を計算
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      
+      // モーダル表示時はbodyのスクロールを無効化
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${scrollbarWidth}px`; // スクロールバーの幅を調整
+    } else {
+      // モーダル非表示時は元に戻す
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }
+
+    // クリーンアップ
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
+  }, [showDetailModal]);
+
+  // ESCキーでモーダルを閉じる & フォーカストラップ
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showDetailModal) {
+        setShowDetailModal(false);
+      }
+    };
+
+    const handleTabKey = (event: KeyboardEvent) => {
+      if (!showDetailModal || event.key !== 'Tab') return;
+
+      const modal = document.querySelector('[role="dialog"]');
+      if (!modal) return;
+
+      const focusableElements = modal.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (event.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement?.focus();
+          event.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement?.focus();
+          event.preventDefault();
+        }
+      }
+    };
+
+    if (showDetailModal) {
+      document.addEventListener('keydown', handleEscKey);
+      document.addEventListener('keydown', handleTabKey);
+      
+      // 初期フォーカスを閉じるボタンに設定
+      setTimeout(() => {
+        const closeButton = document.querySelector('[aria-label="モーダルを閉じる"]') as HTMLElement;
+        closeButton?.focus();
+      }, 100);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+      document.removeEventListener('keydown', handleTabKey);
+    };
+  }, [showDetailModal]);
+
   // 初回アクセス時にサンプルデータがない場合は作成
   useEffect(() => {
     if (!isLoading && lifePlans.length === 0) {
@@ -74,34 +146,49 @@ export function HomePage() {
       {/* 詳細モーダル */}
       {selectedPlan && showDetailModal && simulationResults && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-75 z-40 flex items-start justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-1 sm:p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="detail-modal-title"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowDetailModal(false);
-            }
-          }}
         >
-          <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full my-8 animate-in zoom-in-95 duration-300">
-            <div className="p-4 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <h2 id="detail-modal-title" className="text-xl sm:text-2xl font-bold text-gray-900 line-clamp-2">
-                {selectedPlan.name}
-              </h2>
-              <Button 
-                variant="secondary" 
-                onClick={() => setShowDetailModal(false)}
-                className="rounded-full w-8 h-8 p-0 flex items-center justify-center hover:bg-gray-100 transition-colors shrink-0"
-                aria-label="モーダルを閉じる"
-              >
-                <span className="sr-only">閉じる</span>
-                ✕
-              </Button>
+          {/* 背景オーバーレイ - より濃い背景に変更 */}
+          <div 
+            className="absolute inset-0 bg-black/85 backdrop-blur-sm transition-all duration-300"
+            onClick={() => setShowDetailModal(false)}
+            aria-hidden="true"
+          />
+          
+          {/* モーダルコンテンツ */}
+          <div 
+            className="relative w-full max-w-6xl h-[92vh] sm:h-[90vh] max-h-[92vh] sm:max-h-[90vh] bg-white rounded-lg sm:rounded-2xl shadow-2xl transform transition-all duration-300 scale-100 opacity-100 flex flex-col overflow-hidden animate-modal-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* ヘッダー（固定） */}
+            <div className="flex-shrink-0 bg-white px-3 sm:px-6 py-3 sm:py-5 border-b border-gray-200 rounded-t-lg sm:rounded-t-2xl">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3">
+                <h2 id="detail-modal-title" className="text-base sm:text-2xl font-bold text-gray-900 line-clamp-2 flex-grow pr-2">
+                  {selectedPlan.name}
+                </h2>
+                <Button 
+                  variant="secondary" 
+                  onClick={() => setShowDetailModal(false)}
+                  className="rounded-full w-8 h-8 sm:w-9 sm:h-9 p-0 flex items-center justify-center hover:bg-gray-100 transition-colors shrink-0 text-gray-500 hover:text-gray-700"
+                  aria-label="モーダルを閉じる"
+                >
+                  <span className="sr-only">閉じる</span>
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </Button>
+              </div>
             </div>
-            <div className="p-4 sm:p-6 space-y-6">
+            
+            {/* コンテンツエリア（スクロール可能） - スクロール領域を明確に制御 */}
+            <div className="flex-1 min-h-0 overflow-y-auto bg-white px-3 sm:px-6 py-3 sm:py-6 space-y-4 sm:space-y-6 custom-scrollbar">
               <SimulationStats results={simulationResults} lifePlan={selectedPlan} />
               <SimulationChart results={simulationResults} />
+              {/* スクロール用の余白を追加 */}
+              <div className="h-4 sm:h-6"></div>
             </div>
           </div>
         </div>

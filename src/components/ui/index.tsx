@@ -533,7 +533,8 @@ interface ModalProps extends BaseComponentProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  showCloseButton?: boolean;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -542,46 +543,89 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   size = 'md',
+  showCloseButton = true,
   className = '',
 }) => {
+  // ESCキーでモーダルを閉じる
+  React.useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscKey);
+      // bodyのスクロールを無効化
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+      document.body.style.overflow = '';
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const sizeClasses = {
     sm: 'max-w-md',
-    md: 'max-w-lg',
+    md: 'max-w-lg', 
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
+    full: 'max-w-6xl',
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        {/* Backdrop */}
-        <div
-          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
-          onClick={onClose}
-        />
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={title ? "modal-title" : undefined}
+    >
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300"
+        onClick={onClose}
+        aria-hidden="true"
+      />
 
-        {/* Modal */}
-        <div className={`inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:p-6 ${sizeClasses[size]} ${className}`}>
-          {title && (
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">
-                {title}
-              </h3>
-              <button
-                type="button"
-                className="text-gray-400 hover:text-gray-600"
-                onClick={onClose}
-              >
-                <span className="sr-only">閉じる</span>
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+      {/* Modal Content */}
+      <div 
+        className={`relative w-full h-[90vh] max-h-[90vh] bg-white rounded-2xl shadow-2xl transform transition-all duration-300 flex flex-col overflow-hidden ${sizeClasses[size]} ${className}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        {(title || showCloseButton) && (
+          <div className="flex-shrink-0 bg-white px-4 sm:px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              {title && (
+                <h2 id="modal-title" className="text-lg sm:text-xl font-semibold text-gray-900">
+                  {title}
+                </h2>
+              )}
+              {showCloseButton && (
+                <button
+                  type="button"
+                  className="rounded-full w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                  onClick={onClose}
+                  aria-label="モーダルを閉じる"
+                >
+                  <span className="sr-only">閉じる</span>
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
-          )}
+          </div>
+        )}
+        
+        {/* Body */}
+        <div className="flex-1 min-h-0 overflow-y-auto bg-white px-4 sm:px-6 py-4 sm:py-6">
           {children}
+          {/* スクロール用の余白 */}
+          <div className="h-4"></div>
         </div>
       </div>
     </div>
