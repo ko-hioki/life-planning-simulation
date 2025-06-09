@@ -101,7 +101,7 @@ export const useFormValidation = <T>(
     setErrors(validationErrors);
     setIsValidating(false);
     return Object.keys(validationErrors).length === 0;
-  }, [data, validator]);
+  }, [validator]); // dataを依存配列から削除し、最新のdataは引数で受け取る
 
   // フィールド値更新
   const updateField = useCallback((field: string, value: any) => {
