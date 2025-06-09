@@ -19,14 +19,14 @@ const StatisticCard: React.FC<StatisticCardProps> = ({
   icon,
 }) => {
   const colorClasses = {
-    default: 'bg-gray-50 text-gray-900 border-gray-200',
-    success: 'bg-green-50 text-green-900 border-green-200',
-    warning: 'bg-yellow-50 text-yellow-900 border-yellow-200',
-    error: 'bg-red-50 text-red-900 border-red-200',
+    default: 'bg-white text-gray-900 border-gray-200 shadow-sm',
+    success: 'bg-green-50 text-green-900 border-green-200 shadow-sm',
+    warning: 'bg-yellow-50 text-yellow-900 border-yellow-200 shadow-sm',
+    error: 'bg-red-50 text-red-900 border-red-200 shadow-sm',
   };
 
   return (
-    <Card className={`p-6 ${colorClasses[color]}`}>
+    <Card className={`p-6 relative z-10 ${colorClasses[color]}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <h3 className="text-sm font-medium opacity-75">{title}</h3>
@@ -140,7 +140,7 @@ export const SimulationStats: React.FC<SimulationStatsProps> = ({
   const retirementColor = getFinancialHealthColor(retirementReadiness);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white p-4 rounded-lg">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatisticCard
           title="最終資産"

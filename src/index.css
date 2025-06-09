@@ -523,6 +523,22 @@
     background: rgba(0, 0, 0, 0.25);
   }
 
+  /* モーダル文字重なり防止 */
+  .modal-text {
+    position: relative;
+    z-index: 1;
+    background-color: white;
+    color: var(--color-text-primary);
+  }
+
+  .modal-content-wrapper {
+    position: relative;
+    z-index: 2;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  }
+
   /* モーダル/ダイアログ */
   .modal {
     position: fixed;

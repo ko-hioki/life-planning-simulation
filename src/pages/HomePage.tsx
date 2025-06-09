@@ -146,33 +146,33 @@ export function HomePage() {
       {/* 詳細モーダル */}
       {selectedPlan && showDetailModal && simulationResults && (
         <div 
-          className="fixed inset-0 z-[60] flex items-center justify-center p-1 sm:p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-1 sm:p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="detail-modal-title"
         >
           {/* 背景オーバーレイ - より濃い背景に変更 */}
           <div 
-            className="absolute inset-0 bg-black/85 backdrop-blur-sm transition-all duration-300"
+            className="absolute inset-0 bg-black/90 backdrop-blur-md transition-all duration-300"
             onClick={() => setShowDetailModal(false)}
             aria-hidden="true"
           />
           
           {/* モーダルコンテンツ */}
           <div 
-            className="relative w-full max-w-6xl h-[92vh] sm:h-[90vh] max-h-[92vh] sm:max-h-[90vh] bg-white rounded-lg sm:rounded-2xl shadow-2xl transform transition-all duration-300 scale-100 opacity-100 flex flex-col overflow-hidden animate-modal-in"
+            className="relative w-full max-w-6xl h-[92vh] sm:h-[90vh] max-h-[92vh] sm:max-h-[90vh] bg-white rounded-lg sm:rounded-2xl shadow-2xl border-2 border-gray-300 transform transition-all duration-300 scale-100 opacity-100 flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* ヘッダー（固定） */}
-            <div className="flex-shrink-0 bg-white px-3 sm:px-6 py-3 sm:py-5 border-b border-gray-200 rounded-t-lg sm:rounded-t-2xl">
+            <div className="flex-shrink-0 bg-white px-3 sm:px-6 py-3 sm:py-5 border-b-2 border-gray-300 rounded-t-lg sm:rounded-t-2xl shadow-sm">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3">
-                <h2 id="detail-modal-title" className="text-base sm:text-2xl font-bold text-gray-900 line-clamp-2 flex-grow pr-2">
+                <h2 id="detail-modal-title" className="text-base sm:text-2xl font-bold text-gray-900 line-clamp-2 flex-grow pr-2 bg-white">
                   {selectedPlan.name}
                 </h2>
                 <Button 
                   variant="secondary" 
                   onClick={() => setShowDetailModal(false)}
-                  className="rounded-full w-8 h-8 sm:w-9 sm:h-9 p-0 flex items-center justify-center hover:bg-gray-100 transition-colors shrink-0 text-gray-500 hover:text-gray-700"
+                  className="rounded-full w-8 h-8 sm:w-9 sm:h-9 p-0 flex items-center justify-center hover:bg-gray-100 transition-colors shrink-0 text-gray-500 hover:text-gray-700 bg-white border border-gray-300"
                   aria-label="モーダルを閉じる"
                 >
                   <span className="sr-only">閉じる</span>
@@ -185,8 +185,12 @@ export function HomePage() {
             
             {/* コンテンツエリア（スクロール可能） - スクロール領域を明確に制御 */}
             <div className="flex-1 min-h-0 overflow-y-auto bg-white px-3 sm:px-6 py-3 sm:py-6 space-y-4 sm:space-y-6 custom-scrollbar">
-              <SimulationStats results={simulationResults} lifePlan={selectedPlan} />
-              <SimulationChart results={simulationResults} />
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                <SimulationStats results={simulationResults} lifePlan={selectedPlan} />
+              </div>
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                <SimulationChart results={simulationResults} />
+              </div>
               {/* スクロール用の余白を追加 */}
               <div className="h-4 sm:h-6"></div>
             </div>
