@@ -607,7 +607,7 @@
     background: var(--color-text-secondary);
   }
 
-  /* モバイル対応 */
+  /* モバイル対応とアクセシビリティ */
   @media (max-width: 640px) {
     .modal {
       padding: 0.5rem;
@@ -622,6 +622,46 @@
     .modal-content .modal-header,
     .modal-content .modal-body {
       padding: 1rem;
+    }
+    
+    .modal-content .modal-header h2 {
+      font-size: 1.125rem;
+      line-height: 1.5;
+    }
+  }
+  
+  /* タッチデバイス用のスクロール改善 */
+  @media (pointer: coarse) {
+    .modal-content .modal-body {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+  }
+  
+  /* 高コントラスト対応 */
+  @media (prefers-contrast: high) {
+    .modal-backdrop {
+      background-color: rgba(0, 0, 0, 0.95);
+    }
+    
+    .modal-content {
+      border: 2px solid #000;
+    }
+  }
+  
+  /* 動きを減らす設定への対応 */
+  @media (prefers-reduced-motion: reduce) {
+    .modal {
+      transition: none;
+    }
+    
+    .modal-content {
+      transition: none;
+      animation: none;
+    }
+    
+    .modal-backdrop {
+      transition: none;
     }
   }
 

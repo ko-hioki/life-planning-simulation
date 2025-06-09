@@ -546,24 +546,70 @@ export const Modal: React.FC<ModalProps> = ({
   showCloseButton = true,
   className = '',
 }) => {
-  // ESCキーでモーダルを閉じる
-  React.useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
+  // フォーカス管理とキーボードナビゲーション
+  const modalRef = React.useRef<HTMLDivElement>(null);
+  const previousActiveElement = React.useRef<HTMLElement | null>(null);
 
+  React.useEffect(() => {
     if (isOpen) {
-      document.addEventListener('keydown', handleEscKey);
+      // 現在のアクティブ要素を保存
+      previousActiveElement.current = document.activeElement as HTMLElement;
+      
+      // モーダルにフォーカスを設定
+      setTimeout(() => {
+        modalRef.current?.focus();
+      }, 100);
+      
       // bodyのスクロールを無効化
       document.body.style.overflow = 'hidden';
-    }
+      
+      // ESCキーでモーダルを閉じる
+      const handleEscKey = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          onClose();
+        }
+      };
+      
+      // フォーカストラップの実装
+      const handleTabKey = (event: KeyboardEvent) => {
+        if (event.key === 'Tab') {
+          const focusableElements = modalRef.current?.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          
+          if (focusableElements && focusableElements.length > 0) {
+            const firstElement = focusableElements[0] as HTMLElement;
+            const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+            
+            if (event.shiftKey) {
+              if (document.activeElement === firstElement) {
+                event.preventDefault();
+                lastElement.focus();
+              }
+            } else {
+              if (document.activeElement === lastElement) {
+                event.preventDefault();
+                firstElement.focus();
+              }
+            }
+          }
+        }
+      };
 
-    return () => {
-      document.removeEventListener('keydown', handleEscKey);
-      document.body.style.overflow = '';
-    };
+      document.addEventListener('keydown', handleEscKey);
+      document.addEventListener('keydown', handleTabKey);
+
+      return () => {
+        document.removeEventListener('keydown', handleEscKey);
+        document.removeEventListener('keydown', handleTabKey);
+        document.body.style.overflow = '';
+        
+        // 元のフォーカスを復元
+        if (previousActiveElement.current) {
+          previousActiveElement.current.focus();
+        }
+      };
+    }
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -592,27 +638,30 @@ export const Modal: React.FC<ModalProps> = ({
 
       {/* Modal Content */}
       <div 
+        ref={modalRef}
         className={`relative w-full h-[90vh] max-h-[90vh] bg-white rounded-2xl shadow-2xl transform transition-all duration-300 flex flex-col overflow-hidden ${sizeClasses[size]} ${className}`}
         onClick={(e) => e.stopPropagation()}
+        tabIndex={-1}
+        role="document"
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex-shrink-0 bg-white px-4 sm:px-6 py-4 border-b border-gray-200">
+          <div className="flex-shrink-0 bg-white px-4 sm:px-6 py-4 border-b border-gray-200 shadow-sm">
             <div className="flex items-center justify-between">
               {title && (
-                <h2 id="modal-title" className="text-lg sm:text-xl font-semibold text-gray-900">
+                <h2 id="modal-title" className="text-lg sm:text-xl font-semibold text-gray-900 pr-4 leading-tight">
                   {title}
                 </h2>
               )}
               {showCloseButton && (
                 <button
                   type="button"
-                  className="rounded-full w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                  className="flex-shrink-0 rounded-full w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all"
                   onClick={onClose}
                   aria-label="モーダルを閉じる"
                 >
                   <span className="sr-only">閉じる</span>
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -622,7 +671,7 @@ export const Modal: React.FC<ModalProps> = ({
         )}
         
         {/* Body */}
-        <div className="flex-1 min-h-0 overflow-y-auto bg-white px-4 sm:px-6 py-4 sm:py-6">
+        <div className="flex-1 min-h-0 overflow-y-auto bg-white px-4 sm:px-6 py-4 sm:py-6 focus:outline-none">
           {children}
           {/* スクロール用の余白 */}
           <div className="h-4"></div>
