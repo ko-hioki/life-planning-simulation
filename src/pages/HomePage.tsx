@@ -1,9 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Alert } from '../components/ui';
 import { SimulationChart, SimulationStats } from '../components/charts';
 import { useLifePlans } from '../hooks';
 import { LifePlanSimulator } from '../utils/simulator';
+import { createTestLifePlan } from '../utils/testLifePlan';
+import { StorageManager } from '../utils/storage';
 import type { LifePlan } from '../types';
 
 export function HomePage() {
@@ -11,6 +13,25 @@ export function HomePage() {
   const { lifePlans, isLoading, error, deleteLifePlan } = useLifePlans();
   const [selectedPlan, setSelectedPlan] = useState<LifePlan | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+
+  // 初回アクセス時にサンプルデータがない場合は作成
+  useEffect(() => {
+    if (!isLoading && lifePlans.length === 0) {
+      try {
+        const existingPlans = StorageManager.getLifePlans();
+        if (existingPlans.length === 0) {
+          // サンプルプランを作成
+          const samplePlan = createTestLifePlan();
+          samplePlan.id = 'sample-plan';
+          samplePlan.name = 'サンプルプラン（30歳・夫婦・子供2人）';
+          StorageManager.saveLifePlan(samplePlan);
+          window.location.reload(); // データ更新のためリロード
+        }
+      } catch (error) {
+        console.error('サンプルプラン作成エラー:', error);
+      }
+    }
+  }, [isLoading, lifePlans.length]);
 
   // 選択されたプランのシミュレーション結果を計算
   const simulationResults = useMemo(() => {
