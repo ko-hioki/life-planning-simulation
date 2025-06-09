@@ -11,30 +11,25 @@ interface IncomeInfoFormProps {
   onPrev: () => void;
 }
 
+// バリデーション関数をコンポーネント外で定義
+const validateIncomeForm = (formData: Partial<Income>): Record<string, string> => {
+  const validationErrors = validateIncome(formData);
+  return validationErrors.reduce((acc: Record<string, string>, error: ValidationError) => {
+    acc[error.field] = error.message;
+    return acc;
+  }, {});
+};
+
 export const IncomeInfoForm: React.FC<IncomeInfoFormProps> = ({
   data,
   onUpdate,
   onNext,
   onPrev,
 }) => {
-  // バリデーション関数をフック用に変換
-  const validateIncomeForm = (formData: Partial<Income>): Record<string, string> => {
-    const validationErrors = validateIncome(formData);
-    return validationErrors.reduce((acc: Record<string, string>, error: ValidationError) => {
-      acc[error.field] = error.message;
-      return acc;
-    }, {});
-  };
-
   const { errors, isValid, validate } = useFormValidation(
     data,
     validateIncomeForm
   );
-
-  // dataが変更されたときにバリデーションを実行
-  React.useEffect(() => {
-    validate(data);
-  }, [data, validate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

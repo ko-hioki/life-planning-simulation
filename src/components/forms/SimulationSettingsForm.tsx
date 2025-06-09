@@ -11,30 +11,25 @@ interface SimulationSettingsFormProps {
   onPrev: () => void;
 }
 
+// バリデーション関数をコンポーネント外で定義
+const validateSimulationForm = (formData: Partial<SimulationParameters>): Record<string, string> => {
+  const validationErrors = validateSimulationParameters(formData);
+  return validationErrors.reduce((acc: Record<string, string>, error: ValidationError) => {
+    acc[error.field] = error.message;
+    return acc;
+  }, {});
+};
+
 export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
   data,
   onUpdate,
   onNext,
   onPrev,
 }) => {
-  // バリデーション関数をフック用に変換
-  const validateSimulationForm = (formData: Partial<SimulationParameters>): Record<string, string> => {
-    const validationErrors = validateSimulationParameters(formData);
-    return validationErrors.reduce((acc: Record<string, string>, error: ValidationError) => {
-      acc[error.field] = error.message;
-      return acc;
-    }, {});
-  };
-
   const { errors, isValid, validate } = useFormValidation(
     data,
     validateSimulationForm
   );
-
-  // dataが変更されたときにバリデーションを実行
-  React.useEffect(() => {
-    validate(data);
-  }, [data, validate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

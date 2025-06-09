@@ -83,62 +83,35 @@ export const useLifePlans = () => {
 };
 
 /**
- * フォームバリデーションフック
+ * フォームバリデーションフック（シンプル版）
  */
 export const useFormValidation = <T>(
-  initialData: T,
+  data: T,
   validator: (data: T) => Record<string, string>
 ) => {
-  const [data, setData] = useState<T>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [isValidating, setIsValidating] = useState(false);
 
-  // バリデーション実行
-  const validate = useCallback((dataToValidate?: T) => {
-    setIsValidating(true);
-    const validationErrors = validator(dataToValidate || data);
+  // データ変更時に自動バリデーション（validatorは依存配列に含めない）
+  useEffect(() => {
+    const validationErrors = validator(data);
     setErrors(validationErrors);
-    setIsValidating(false);
+  }, [data]);
+
+  // 手動バリデーション実行
+  const validate = useCallback((dataToValidate?: T) => {
+    const targetData = dataToValidate || data;
+    const validationErrors = validator(targetData);
+    setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
-  }, [validator]); // dataを依存配列から削除し、最新のdataは引数で受け取る
+  }, [data]);
 
-  // フィールド値更新
-  const updateField = useCallback((field: string, value: any) => {
-    setData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-    setTouched(prev => ({
-      ...prev,
-      [field]: true,
-    }));
-  }, []);
-
-  // フォームリセット
-  const resetForm = useCallback(() => {
-    setData(initialData);
-    setErrors({});
-    setTouched({});
-  }, [initialData]);
-
-  // 計算されたプロパティ
   const isValid = Object.keys(errors).length === 0;
-  const hasErrors = Object.keys(errors).length > 0;
 
   return {
-    data,
-    setData,
     errors,
-    touched,
-    isValidating,
     isValid,
-    hasErrors,
     validate,
-    updateField,
-    resetForm,
     getFieldError: (field: string) => errors[field],
-    isFieldTouched: (field: string) => touched[field] || false,
   };
 };
 
