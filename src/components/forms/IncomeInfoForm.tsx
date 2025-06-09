@@ -31,18 +31,43 @@ export const IncomeInfoForm: React.FC<IncomeInfoFormProps> = ({
     validateIncomeForm
   );
 
+  // dataが変更されたときにバリデーションを実行
+  React.useEffect(() => {
+    validate(data);
+  }, [data, validate]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
+    if (validate(data)) {
       onNext();
     }
   };
 
   const handleInputChange = (field: keyof Income, value: string | number) => {
-    const numValue = typeof value === 'string' ? parseInt(value) || 0 : value;
-    const updatedData = { ...data, [field]: numValue };
+    let processedValue: number | undefined;
+    
+    if (typeof value === 'string') {
+      if (value === '' || value === null) {
+        // 空文字列またはnullの場合はundefinedに設定
+        processedValue = undefined;
+      } else {
+        // 数値変換を試行
+        const parsed = field === 'incomeGrowthRate' ? parseFloat(value) : parseInt(value);
+        processedValue = isNaN(parsed) ? undefined : parsed;
+      }
+    } else {
+      processedValue = value;
+    }
+    
+    const updatedData = { ...data };
+    if (processedValue === undefined) {
+      // undefinedの場合はプロパティを削除
+      delete updatedData[field];
+    } else {
+      updatedData[field] = processedValue;
+    }
+    
     onUpdate(updatedData);
-    validate(updatedData);
   };
 
   const formatCurrency = (value: number): string => {
@@ -217,8 +242,9 @@ export const IncomeInfoForm: React.FC<IncomeInfoFormProps> = ({
             type="submit"
             variant="primary"
             disabled={!isValid}
+            aria-label={isValid ? '次へ進む' : `エラー: ${Object.values(errors).join(', ')}`}
           >
-            次へ
+            次へ {!isValid && `(${Object.keys(errors).length}個のエラー)`}
           </Button>
         </div>
       </form>

@@ -31,17 +31,33 @@ export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
     validateSimulationForm
   );
 
+  // dataが変更されたときにバリデーションを実行
+  React.useEffect(() => {
+    validate(data);
+  }, [data, validate]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
+    if (validate(data)) {
       onNext();
     }
   };
 
   const handleInputChange = (field: keyof SimulationParameters, value: string | number) => {
-    const updatedData = { ...data, [field]: value };
+    let processedValue: any = value;
+    
+    if (typeof value === 'string') {
+      if (field === 'simulationStartYear' || field === 'simulationEndYear') {
+        // 年の場合は整数に変換、空文字列の場合はundefinedに
+        processedValue = value === '' ? undefined : parseInt(value);
+      } else if (field === 'inflationRate' || field === 'investmentReturnRate') {
+        // 率の場合は浮動小数点数に変換、空文字列の場合はundefinedに
+        processedValue = value === '' ? undefined : parseFloat(value);
+      }
+    }
+    
+    const updatedData = { ...data, [field]: processedValue };
     onUpdate(updatedData);
-    validate(updatedData);
   };
 
   const currentYear = new Date().getFullYear();
@@ -65,8 +81,8 @@ export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
           </label>
           <Select
             value={data.simulationStartYear?.toString() || ''}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
-              handleInputChange('simulationStartYear', parseInt(e.target.value))
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              handleInputChange('simulationStartYear', e.target.value)
             }
             error={errors.simulationStartYear}
           >
@@ -92,8 +108,8 @@ export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
           </label>
           <Select
             value={data.simulationEndYear?.toString() || ''}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
-              handleInputChange('simulationEndYear', parseInt(e.target.value))
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              handleInputChange('simulationEndYear', e.target.value)
             }
             error={errors.simulationEndYear}
           >
@@ -119,8 +135,8 @@ export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
           </label>
           <Select
             value={data.inflationRate?.toString() || ''}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
-              handleInputChange('inflationRate', parseFloat(e.target.value))
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              handleInputChange('inflationRate', e.target.value)
             }
             error={errors.inflationRate}
           >
@@ -146,8 +162,8 @@ export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
           </label>
           <Select
             value={data.investmentReturnRate?.toString() || ''}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
-              handleInputChange('investmentReturnRate', parseFloat(e.target.value))
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              handleInputChange('investmentReturnRate', e.target.value)
             }
             error={errors.investmentReturnRate}
           >
@@ -237,6 +253,11 @@ export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
             type="submit"
             variant="primary"
             disabled={!isValid}
+            aria-label={
+              !isValid && Object.keys(errors).length > 0
+                ? `入力エラーがあります: ${Object.values(errors)[0]}`
+                : undefined
+            }
           >
             次へ
           </Button>

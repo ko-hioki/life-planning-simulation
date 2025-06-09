@@ -47,8 +47,14 @@ export const ChildrenInfoForm: React.FC<ChildrenInfoFormProps> = ({
 
   // 子供の情報を更新
   const updateChild = useCallback((childId: string, field: keyof Child, value: any) => {
+    // 文字列フィールドで空文字列の場合はundefinedに変換
+    let processedValue: any = value;
+    if (typeof value === 'string' && value === '' && field === 'name') {
+      processedValue = undefined;
+    }
+    
     const updatedData = data.map(child => 
-      child.id === childId ? { ...child, [field]: value } : child
+      child.id === childId ? { ...child, [field]: processedValue } : child
     );
     onUpdate(updatedData);
     

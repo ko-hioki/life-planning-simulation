@@ -35,7 +35,13 @@ export const BasicInfoForm: React.FC<BasicInfoFormProps> = ({
   };
 
   const handleInputChange = (field: keyof UserInfo, value: string | number | boolean) => {
-    const updatedData = { ...data, [field]: value };
+    // 文字列フィールドで空文字列の場合はundefinedに変換
+    let processedValue: any = value;
+    if (typeof value === 'string' && value === '' && field === 'name') {
+      processedValue = undefined;
+    }
+    
+    const updatedData = { ...data, [field]: processedValue };
     onUpdate(updatedData);
   };
 
