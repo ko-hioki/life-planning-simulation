@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BasicInfoForm } from '../forms/BasicInfoForm'
 import type { UserInfo } from '../../types'
@@ -108,7 +108,7 @@ describe('BasicInfoForm', () => {
   })
 
   it('配偶者がいる場合、配偶者の情報入力フィールドが表示される', async () => {
-    const user = userEvent.setup()
+    // テスト用のユーザーイベント設定
     
     // 配偶者がいる状態のラッパーコンポーネント
     const BasicInfoFormWrapperWithSpouse: React.FC = () => {

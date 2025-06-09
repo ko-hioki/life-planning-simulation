@@ -185,15 +185,25 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
           // ... 他のユーザー情報 (必要に応じて追加)
         },
         spouse: basicInfo.hasSpouse && basicInfo.spouseBirthYear ? {
+          name: '配偶者', // デフォルト名
           birthYear: basicInfo.spouseBirthYear,
-          // ... 他の配偶者情報 (必要に応じて追加)
+          retirementAge: 65, // デフォルト値
+          workStatus: 'working' as const, // デフォルト値
         } : undefined,
         assets: {
-          savings: basicInfo.currentSavings!,
-          // ... 他の資産情報 (必要に応じて追加)
+          savings: basicInfo.currentSavings || 0,
+          investments: 0, // デフォルト値
+          realEstate: 0, // デフォルト値
+          other: 0, // デフォルト値
         },
         income: income as Income, // 型アサーションはデータ構造が一致している前提
         expenses: expenses as Expenses, // 型アサーションはデータ構造が一致している前提
+        pension: {
+          nationalPension: 0, // デフォルト値
+          employeePension: 0, // デフォルト値
+          corporatePension: 0, // デフォルト値
+          privatePension: 0, // デフォルト値
+        },
         children: children,
         simulationParameters: simulationSettings as SimulationParameters, // 型アサーションはデータ構造が一致している前提
         createdAt: initialData?.createdAt || new Date(),
@@ -234,7 +244,6 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
             onUpdate={handleIncomeUpdate}
             onNext={() => handleStepNext(currentStep)}
             onPrev={prevStep}
-            onCancel={commonProps.onCancel}
           />
         );
       case 'expenses':
@@ -244,7 +253,6 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
             onUpdate={handleExpensesUpdate}
             onNext={() => handleStepNext(currentStep)}
             onPrev={prevStep}
-            onCancel={commonProps.onCancel}
           />
         );
       case 'children':
@@ -254,7 +262,6 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
             onUpdate={handleChildrenUpdate}
             onNext={() => handleStepNext(currentStep)}
             onPrev={prevStep}
-            onCancel={commonProps.onCancel}
           />
         );
       case 'simulation':
@@ -264,17 +271,19 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
             onUpdate={handleSimulationSettingsUpdate}
             onNext={() => handleStepNext(currentStep)}
             onPrev={prevStep}
-            onCancel={commonProps.onCancel}
           />
         );
       case 'review':
         return (
           <ReviewForm
-            formData={formData}
-            onEditStep={handleEditStep}
-            onSubmit={handleWizardComplete} // ここをhandleWizardCompleteに
+            basicInfo={formData.basicInfo}
+            income={formData.income}
+            expenses={formData.expenses}
+            children={formData.children}
+            simulationSettings={formData.simulationSettings}
+            onComplete={handleWizardComplete}
             onPrev={prevStep}
-            onCancel={commonProps.onCancel}
+            onEdit={handleEditStep}
           />
         );
       default:

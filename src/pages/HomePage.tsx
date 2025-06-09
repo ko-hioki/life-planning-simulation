@@ -133,7 +133,7 @@ export function HomePage() {
                 </div>
                 <h2 className="text-4xl font-bold text-gray-900 mb-4">
                   あなたの未来を<br />
-                  <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-black">
                     シミュレーション
                   </span>
                   しましょう

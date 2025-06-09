@@ -43,8 +43,12 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
     return birthYear + retirementAge;
   };
 
-  const totalMonthlyIncome = ((income.userIncome || 0) + (income.spouseIncome || 0) + (income.otherIncome || 0)) / 12;
-  const totalMonthlyExpenses = (expenses.livingExpenses || 0) + (expenses.housingExpenses || 0) + (expenses.otherExpenses || 0);
+  // 安全にデータを取得する
+  const safeIncome = income || {};
+  const safeExpenses = expenses || {};
+  
+  const totalMonthlyIncome = ((safeIncome.userIncome || 0) + (safeIncome.spouseIncome || 0) + (safeIncome.otherIncome || 0)) / 12;
+  const totalMonthlyExpenses = (safeExpenses.livingExpenses || 0) + (safeExpenses.housingExpenses || 0) + (safeExpenses.otherExpenses || 0);
   const monthlyCashFlow = totalMonthlyIncome - totalMonthlyExpenses;
 
   return (
@@ -123,24 +127,24 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-600">本人年収:</span>
-                <span className="ml-2 font-medium">{formatCurrency(income.userIncome)}</span>
+                <span className="ml-2 font-medium">{formatCurrency(safeIncome.userIncome)}</span>
               </div>
               <div>
                 <span className="text-gray-600">配偶者年収:</span>
-                <span className="ml-2 font-medium">{formatCurrency(income.spouseIncome)}</span>
+                <span className="ml-2 font-medium">{formatCurrency(safeIncome.spouseIncome)}</span>
               </div>
               <div>
                 <span className="text-gray-600">その他収入:</span>
-                <span className="ml-2 font-medium">{formatCurrency(income.otherIncome)}</span>
+                <span className="ml-2 font-medium">{formatCurrency(safeIncome.otherIncome)}</span>
               </div>
               <div>
                 <span className="text-gray-600">収入成長率:</span>
-                <span className="ml-2 font-medium">{formatPercentage(income.incomeGrowthRate)}</span>
+                <span className="ml-2 font-medium">{formatPercentage(safeIncome.incomeGrowthRate)}</span>
               </div>
               <div className="md:col-span-2 pt-2 border-t">
                 <span className="text-gray-600">世帯年収合計:</span>
                 <span className="ml-2 font-bold text-lg text-green-600">
-                  {formatCurrency((income.userIncome || 0) + (income.spouseIncome || 0) + (income.otherIncome || 0))}
+                  {formatCurrency((safeIncome.userIncome || 0) + (safeIncome.spouseIncome || 0) + (safeIncome.otherIncome || 0))}
                 </span>
               </div>
             </div>
@@ -163,19 +167,19 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <span className="text-gray-600">生活費:</span>
-                <span className="ml-2 font-medium">{formatCurrency(expenses.livingExpenses)}/月</span>
+                <span className="ml-2 font-medium">{formatCurrency(safeExpenses.livingExpenses)}/月</span>
               </div>
               <div>
                 <span className="text-gray-600">住居費:</span>
-                <span className="ml-2 font-medium">{formatCurrency(expenses.housingExpenses)}/月</span>
+                <span className="ml-2 font-medium">{formatCurrency(safeExpenses.housingExpenses)}/月</span>
               </div>
               <div>
                 <span className="text-gray-600">その他支出:</span>
-                <span className="ml-2 font-medium">{formatCurrency(expenses.otherExpenses)}/月</span>
+                <span className="ml-2 font-medium">{formatCurrency(safeExpenses.otherExpenses)}/月</span>
               </div>
               <div>
                 <span className="text-gray-600">支出成長率:</span>
-                <span className="ml-2 font-medium">{formatPercentage(expenses.expenseGrowthRate)}</span>
+                <span className="ml-2 font-medium">{formatPercentage(safeExpenses.expenseGrowthRate)}</span>
               </div>
               <div className="md:col-span-2 pt-2 border-t">
                 <span className="text-gray-600">月間支出合計:</span>
