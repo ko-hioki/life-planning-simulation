@@ -23,20 +23,21 @@ export const Button: React.FC<ButtonProps> = ({
   icon,
   fullWidth = false,
 }) => {
-  const baseClasses = 'btn';
+  const baseClasses = 'btn inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  
   const variantClasses = {
-    primary: 'btn-primary',
-    secondary: 'btn-secondary',
-    outline: 'btn-outline',
-    danger: 'btn-danger',
-    success: 'btn-success',
-    warning: 'btn-warning',
+    primary: 'bg-smarthr-blue text-white hover:bg-smarthr-blue-dark focus:ring-smarthr-blue',
+    secondary: 'bg-white text-smarthr-black border-smarthr-grey-30 hover:bg-smarthr-grey-05 focus:ring-smarthr-blue',
+    outline: 'border-smarthr-blue text-smarthr-blue hover:bg-smarthr-blue-05 focus:ring-smarthr-blue',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+    success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
+    warning: 'bg-yellow-600 text-white hover:bg-yellow-700 focus:ring-yellow-500',
   };
   
   const sizeClasses = {
-    sm: 'btn-sm',
-    md: '',
-    lg: 'btn-lg',
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-6 py-3 text-base',
   };
 
   const classes = [
@@ -123,12 +124,18 @@ export const InputField: React.FC<InputFieldProps> = ({
 
 // Basic Input Component (without label)
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
   error?: string;
+  helpText?: string;
 }
 
 export const Input: React.FC<InputProps> = ({
-  className = '',
+  label,
   error,
+  helpText,
+  required,
+  id,
+  className = '',
   ...props
 }) => {
   const inputClasses = [
@@ -138,10 +145,28 @@ export const Input: React.FC<InputProps> = ({
   ].filter(Boolean).join(' ');
 
   return (
-    <input
-      className={inputClasses}
-      {...props}
-    />
+    <div>
+      {label && (
+        <label htmlFor={id} className={`form-label ${required ? 'form-label-required' : ''}`}>
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
+      <input
+        id={id}
+        className={inputClasses}
+        required={required}
+        {...props}
+      />
+      {helpText && (
+        <p className="text-sm text-gray-500 mt-1">
+          {helpText}
+        </p>
+      )}
+      {error && (
+        <div className="form-error">{error}</div>
+      )}
+    </div>
   );
 };
 
@@ -204,12 +229,19 @@ export const SelectField: React.FC<SelectFieldProps> = ({
 
 // Basic Select Component (without label)
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  label?: string;
+  options?: Array<{ value: string; label: string }>;
+  placeholder?: string;
   error?: string;
 }
 
 export const Select: React.FC<SelectProps> = ({
-  className = '',
+  label,
+  options = [],
+  placeholder,
   error,
+  id,
+  className = '',
   children,
   ...props
 }) => {
@@ -220,12 +252,33 @@ export const Select: React.FC<SelectProps> = ({
   ].filter(Boolean).join(' ');
 
   return (
-    <select
-      className={selectClasses}
-      {...props}
-    >
-      {children}
-    </select>
+    <div>
+      {label && (
+        <label htmlFor={id} className="form-label">
+          {label}
+        </label>
+      )}
+      <select
+        id={id}
+        className={selectClasses}
+        {...props}
+      >
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+        {children}
+      </select>
+      {error && (
+        <div className="form-error">{error}</div>
+      )}
+    </div>
   );
 };
 
@@ -301,8 +354,11 @@ export const Card: React.FC<CardProps> = ({
   hover = true,
 }) => {
   const cardClasses = [
-    'card',
-    hover ? 'hover-lift' : '',
+    'bg-white',
+    'rounded-lg',
+    'shadow-md',
+    'p-6',
+    hover ? 'hover:shadow-lg transition-shadow' : '',
     onClick ? 'cursor-pointer' : '',
     className,
   ].filter(Boolean).join(' ');
@@ -319,21 +375,15 @@ export const Card: React.FC<CardProps> = ({
           onClick();
         }
       } : undefined}
-      style={{
-        backgroundColor: 'var(--color-bg-primary)',
-        borderColor: 'var(--color-border-primary)',
-      }}
     >
       {header && (
-        <div className="card-header">
+        <div className="mb-4 border-b border-gray-200 pb-3">
           {header}
         </div>
       )}
-      <div className="card-body">
-        {children}
-      </div>
+      {children}
       {footer && (
-        <div className="card-footer">
+        <div className="mt-4 border-t border-gray-200 pt-3">
           {footer}
         </div>
       )}
@@ -358,10 +408,10 @@ export const Alert: React.FC<AlertProps> = ({
   className = '',
 }) => {
   const variantClasses = {
-    info: 'alert-info',
-    warning: 'alert-warning',
-    error: 'alert-error',
-    success: 'alert-success',
+    info: 'bg-blue-50 border-blue-200 text-blue-800',
+    warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
+    error: 'bg-red-50 border-red-200 text-red-800',
+    success: 'bg-green-50 border-green-200 text-green-800',
   };
 
   const defaultIcons = {
@@ -388,7 +438,11 @@ export const Alert: React.FC<AlertProps> = ({
   };
 
   const classes = [
-    'alert',
+    'border',
+    'border-l-4',
+    'p-4',
+    'rounded-r',
+    'text-sm',
     variantClasses[variant],
     className,
   ].filter(Boolean).join(' ');

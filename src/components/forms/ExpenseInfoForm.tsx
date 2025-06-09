@@ -60,8 +60,8 @@ export const ExpenseInfoForm: React.FC<ExpenseInfoFormProps> = ({
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">支出情報</h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold text-smarthr-black mb-2">支出情報</h2>
+        <p className="text-smarthr-grey-60">
           月々の支出を項目別に入力してください。
         </p>
       </div>
@@ -180,7 +180,7 @@ export const ExpenseInfoForm: React.FC<ExpenseInfoFormProps> = ({
 
         {/* 支出合計の表示 */}
         {(data.livingExpenses || data.housingExpenses || data.otherExpenses) && (
-          <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+          <div className="bg-smarthr-red-05 p-4 rounded-lg border border-smarthr-red-20">
             <h3 className="font-medium text-red-900 mb-2">支出合計</h3>
             <div className="space-y-1 text-sm text-red-800">
               <div className="flex justify-between">

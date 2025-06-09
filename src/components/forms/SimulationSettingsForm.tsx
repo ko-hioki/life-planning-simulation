@@ -51,8 +51,8 @@ export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">シミュレーション設定</h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold text-smarthr-black mb-2">シミュレーション設定</h2>
+        <p className="text-smarthr-grey-60">
           シミュレーション期間と前提条件を設定してください。
         </p>
       </div>
@@ -170,7 +170,7 @@ export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
         </div>
 
         {/* 設定の説明と注意事項 */}
-        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+        <div className="bg-smarthr-yellow-05 p-4 rounded-lg border border-smarthr-yellow-20">
           <h3 className="font-medium text-yellow-900 mb-2">設定の目安</h3>
           <div className="space-y-2 text-sm text-yellow-800">
             <div>
@@ -187,7 +187,7 @@ export const SimulationSettingsForm: React.FC<SimulationSettingsFormProps> = ({
 
         {/* シミュレーション期間の表示 */}
         {data.simulationStartYear && data.simulationEndYear && (
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <div className="bg-smarthr-blue-05 p-4 rounded-lg border border-smarthr-blue-20">
             <h3 className="font-medium text-blue-900 mb-2">シミュレーション期間</h3>
             <div className="space-y-1 text-sm text-blue-800">
               <div className="flex justify-between">

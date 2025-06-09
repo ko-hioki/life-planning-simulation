@@ -50,8 +50,8 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">入力内容の確認</h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold text-smarthr-black mb-2">入力内容の確認</h2>
+        <p className="text-smarthr-grey-60">
           入力した内容を確認し、必要に応じて修正してからライフプランを作成してください。
         </p>
       </div>

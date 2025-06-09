@@ -111,8 +111,8 @@ export const ChildrenInfoForm: React.FC<ChildrenInfoFormProps> = ({
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">子供・教育情報</h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold text-smarthr-black mb-2">子供・教育情報</h2>
+        <p className="text-smarthr-grey-60">
           お子様の情報と教育プランを入力してください。（任意）
         </p>
       </div>
@@ -120,9 +120,9 @@ export const ChildrenInfoForm: React.FC<ChildrenInfoFormProps> = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* 子供のリスト */}
         {data.map((child, index) => (
-          <div key={child.id} className="bg-gray-50 p-6 rounded-lg border">
+          <div key={child.id} className="bg-smarthr-yellow-05 p-6 rounded-lg border border-smarthr-yellow-20">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-smarthr-black">
                 お子様 {index + 1}
               </h3>
               <Button
@@ -183,7 +183,7 @@ export const ChildrenInfoForm: React.FC<ChildrenInfoFormProps> = ({
 
             {/* 教育パス */}
             <div className="mt-6">
-              <h4 className="text-md font-medium text-gray-800 mb-3">教育プラン</h4>
+              <h4 className="text-md font-medium text-smarthr-black mb-3">教育プラン</h4>
               
               <div className="space-y-3">
                 {/* 高校 */}
@@ -236,7 +236,7 @@ export const ChildrenInfoForm: React.FC<ChildrenInfoFormProps> = ({
             </div>
 
             {/* 推定教育費 */}
-            <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+            <div className="mt-4 p-3 bg-smarthr-blue-05 rounded border border-smarthr-blue-20">
               <h5 className="text-sm font-medium text-blue-900 mb-1">推定教育費</h5>
               <p className="text-xs text-blue-700">
                 ※概算値です。実際の費用は学校や地域により異なります。

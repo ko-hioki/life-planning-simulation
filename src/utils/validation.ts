@@ -373,7 +373,6 @@ export function validateBasicInfo(data: Partial<UserInfo>): Record<string, strin
   }
 
   // 現在の貯蓄額
-  validator.required('currentSavings', data.currentSavings, '現在の貯蓄額');
   if (data.currentSavings !== undefined) {
     validator.positive('currentSavings', data.currentSavings, '現在の貯蓄額');
   }

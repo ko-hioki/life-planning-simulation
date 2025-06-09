@@ -165,67 +165,58 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
   const handleWizardComplete = useCallback(() => {
     try {
       // ライフプランオブジェクトを構築
-      const lifePlan: LifePlan = {
-        id: initialData?.id || `plan-${Date.now()}`,
-        name: `${formData.basicInfo.name || 'ユーザー'}のライフプラン`,
+      const { basicInfo, income, expenses, children, simulationSettings } = formData;
+
+      // バリデーション (簡易的な例)
+      if (!basicInfo.name || !basicInfo.birthYear || !basicInfo.retirementAge || basicInfo.currentSavings === undefined) {
+        setError('基本情報に未入力の項目があります。');
+        goToStep(wizardSteps.findIndex(step => step.id === 'basic-info'));
+        return;
+      }
+      // TODO: 他のステップのバリデーションも同様に追加
+
+      const newPlan: LifePlan = {
+        id: initialData?.id || Date.now().toString(),
+        name: basicInfo.name || '新しいライフプラン',
+        user: {
+          name: basicInfo.name!,
+          birthYear: basicInfo.birthYear!,
+          retirementAge: basicInfo.retirementAge!,
+          // ... 他のユーザー情報 (必要に応じて追加)
+        },
+        spouse: basicInfo.hasSpouse && basicInfo.spouseBirthYear ? {
+          birthYear: basicInfo.spouseBirthYear,
+          // ... 他の配偶者情報 (必要に応じて追加)
+        } : undefined,
+        assets: {
+          savings: basicInfo.currentSavings!,
+          // ... 他の資産情報 (必要に応じて追加)
+        },
+        income: income as Income, // 型アサーションはデータ構造が一致している前提
+        expenses: expenses as Expenses, // 型アサーションはデータ構造が一致している前提
+        children: children,
+        simulationParameters: simulationSettings as SimulationParameters, // 型アサーションはデータ構造が一致している前提
         createdAt: initialData?.createdAt || new Date(),
         updatedAt: new Date(),
-        user: {
-          name: formData.basicInfo.name || '',
-          birthYear: formData.basicInfo.birthYear || new Date().getFullYear() - 30,
-          retirementAge: formData.basicInfo.retirementAge || 65,
-        },
-        spouse: formData.basicInfo.hasSpouse && formData.basicInfo.spouseBirthYear ? {
-          name: initialData?.spouse?.name || '配偶者',
-          birthYear: formData.basicInfo.spouseBirthYear,
-          retirementAge: initialData?.spouse?.retirementAge || 65,
-          workStatus: formData.income.spouseIncome && formData.income.spouseIncome > 0 ? 'working' : 'notWorking',
-        } : undefined,
-        children: formData.children,
-        income: {
-          userIncome: formData.income.userIncome || 0,
-          spouseIncome: formData.income.spouseIncome || 0,
-          otherIncome: formData.income.otherIncome || 0,
-          incomeGrowthRate: formData.income.incomeGrowthRate || 0.02,
-        },
-        expenses: {
-          livingExpenses: formData.expenses.livingExpenses || 0,
-          housingExpenses: formData.expenses.housingExpenses || 0,
-          otherExpenses: formData.expenses.otherExpenses || 0,
-          expenseGrowthRate: formData.expenses.expenseGrowthRate || 0.02,
-        },
-        assets: {
-          savings: formData.basicInfo.currentSavings || 0,
-          investments: initialData?.assets?.investments || 0,
-          realEstate: initialData?.assets?.realEstate || 0,
-          other: initialData?.assets?.other || 0,
-        },
-        pension: {
-          nationalPension: initialData?.pension?.nationalPension || 0,
-          employeePension: initialData?.pension?.employeePension || 0,
-          corporatePension: initialData?.pension?.corporatePension || 0,
-          privatePension: initialData?.pension?.privatePension || 0,
-        },
-        simulationParameters: {
-          simulationStartYear: formData.simulationSettings.simulationStartYear || new Date().getFullYear(),
-          simulationEndYear: formData.simulationSettings.simulationEndYear || new Date().getFullYear() + 50,
-          inflationRate: formData.simulationSettings.inflationRate || 0.02,
-          investmentReturnRate: formData.simulationSettings.investmentReturnRate || 0.04,
-        },
       };
-
-      console.log(initialData ? 'ライフプラン更新:' : '新規ライフプラン作成:', lifePlan);
-      onComplete(lifePlan);
+      onComplete(newPlan);
     } catch (err) {
-      setError('プランの作成に失敗しました');
-      console.error('Error creating life plan:', err);
+      console.error("Error completing wizard:", err);
+      setError(err instanceof Error ? err.message : 'プランの作成または更新中にエラーが発生しました。');
     }
-  }, [formData, onComplete, initialData]);
+  }, [formData, onComplete, initialData, goToStep, wizardSteps, setError]);
 
   // 現在のステップコンポーネントを取得
   const getCurrentStepComponent = () => {
     const step = wizardSteps[currentStep];
-    
+    if (!step) {
+      return <Alert variant="error">現在のステップが見つかりません。</Alert>;
+    }
+
+    const commonProps = {
+      onCancel: onCancel, // WizardPageから渡されたキャンセル処理
+    };
+
     switch (step.id) {
       case 'basic-info':
         return (
@@ -233,10 +224,9 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
             data={formData.basicInfo}
             onUpdate={handleBasicInfoUpdate}
             onNext={() => handleStepNext(currentStep)}
-            onCancel={onCancel}
+            onCancel={commonProps.onCancel}
           />
         );
-      
       case 'income':
         return (
           <IncomeInfoForm
@@ -244,9 +234,9 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
             onUpdate={handleIncomeUpdate}
             onNext={() => handleStepNext(currentStep)}
             onPrev={prevStep}
+            onCancel={commonProps.onCancel}
           />
         );
-      
       case 'expenses':
         return (
           <ExpenseInfoForm
@@ -254,9 +244,9 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
             onUpdate={handleExpensesUpdate}
             onNext={() => handleStepNext(currentStep)}
             onPrev={prevStep}
+            onCancel={commonProps.onCancel}
           />
         );
-      
       case 'children':
         return (
           <ChildrenInfoForm
@@ -264,9 +254,9 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
             onUpdate={handleChildrenUpdate}
             onNext={() => handleStepNext(currentStep)}
             onPrev={prevStep}
+            onCancel={commonProps.onCancel}
           />
         );
-      
       case 'simulation':
         return (
           <SimulationSettingsForm
@@ -274,115 +264,79 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
             onUpdate={handleSimulationSettingsUpdate}
             onNext={() => handleStepNext(currentStep)}
             onPrev={prevStep}
+            onCancel={commonProps.onCancel}
           />
         );
-      
       case 'review':
         return (
           <ReviewForm
-            basicInfo={formData.basicInfo}
-            income={formData.income}
-            expenses={formData.expenses}
-            children={formData.children}
-            simulationSettings={formData.simulationSettings}
-            onComplete={handleWizardComplete}
+            formData={formData}
+            onEditStep={handleEditStep}
+            onSubmit={handleWizardComplete} // ここをhandleWizardCompleteに
             onPrev={prevStep}
-            onEdit={handleEditStep}
+            onCancel={commonProps.onCancel}
           />
         );
-      
       default:
-        // 未実装のステップのプレースホルダー
-        return (
-          <div className="max-w-2xl mx-auto text-center py-12">
-            <Alert variant="info" className="mb-6">
-              このステップは実装中です。
-            </Alert>
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">
-                {step.title}
-              </h3>
-              <p className="text-gray-600">
-                {step.description}
-              </p>
-              <div className="flex justify-between pt-6">
-                <Button
-                  variant="secondary"
-                  onClick={prevStep}
-                  disabled={!canGoPrev}
-                >
-                  前へ
-                </Button>
-                <Button
-                  variant="primary"
-                  onClick={isLastStep ? handleWizardComplete : nextStep}
-                  disabled={!canGoNext && !isLastStep}
-                >
-                  {isLastStep ? (initialData ? '更新' : '完了') : '次へ'}
-                </Button>
-              </div>
-            </div>
-          </div>
-        );
+        // フォールバックUIまたはエラー
+        return <Alert variant="error">不明なステップです: {step.id}</Alert>;
     }
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="h-full flex flex-col bg-smarthr-neutral-50">
       {/* ウィザードヘッダー（固定） */}
-      <div className="bg-gradient-to-r from-smarthr-blue to-aqua-03 text-white p-6 rounded-t-xl shrink-0">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-              <span className="text-2xl">{wizardSteps[currentStep]?.icon || '📋'}</span>
+      <div className="bg-gradient-to-r from-smarthr-blue to-aqua-03 text-white px-6 py-8 sm:px-8 sm:py-10 shrink-0 shadow-lg">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                <span className="text-3xl">{wizardSteps[currentStep]?.icon || '📋'}</span>
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white mb-1">
+                  {initialData ? 'ライフプラン編集' : 'ライフプラン作成'}
+                </h1>
+                <p className="text-blue-100 text-base">
+                  ステップ {currentStep + 1} / {wizardSteps.length}：{wizardSteps[currentStep]?.title}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">
-                {initialData ? 'ライフプラン編集' : 'ライフプラン作成'}
-              </h1>
-              <p className="text-blue-100 text-sm">
-                ステップ {currentStep + 1} / {wizardSteps.length}
-              </p>
+            <Button
+              variant="secondary"
+              onClick={onCancel}
+              className="text-smarthr-black bg-white hover:bg-gray-100 focus-visible:ring-white"
+            >
+              <span className="mr-1.5">✕</span>
+              キャンセル
+            </Button>
+          </div>
+          
+          {/* プログレスバー */}
+          <div className="mb-1">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-sm font-medium text-white">
+                {wizardSteps[currentStep]?.description}
+              </span>
+              <span className="text-sm text-blue-100">
+                {Math.round(progress * 100)}% 完了
+              </span>
+            </div>
+            <div className="w-full bg-white bg-opacity-30 rounded-full h-2.5" data-testid="wizard-progress">
+              <div
+                className="bg-white h-2.5 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${progress * 100}%` }}
+              />
             </div>
           </div>
-          <Button
-            variant="secondary"
-            onClick={onCancel}
-            className="text-smarthr-black bg-white hover:bg-gray-50"
-          >
-            <span className="mr-1">✕</span>
-            キャンセル
-          </Button>
         </div>
-        
-        {/* プログレスバー */}
-        <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-white">
-              {wizardSteps[currentStep]?.title}
-            </span>
-            <span className="text-sm text-blue-100">
-              {Math.round(progress * 100)}% 完了
-            </span>
-          </div>
-          <div className="w-full bg-white bg-opacity-30 rounded-full h-2">
-            <div
-              className="bg-white h-2 rounded-full transition-all duration-300 ease-out"
-              style={{ width: `${progress * 100}%` }}
-            />
-          </div>
-        </div>
-
-        <p className="text-blue-100 text-sm">
-          {wizardSteps[currentStep]?.description}
-        </p>
       </div>
 
       {/* メインコンテンツ（スクロール可能） */}
-      <div className="bg-white rounded-b-xl shadow-xl flex-1 overflow-y-auto">
-        <div className="p-6">
+      <div className="flex-1 overflow-y-auto bg-smarthr-neutral-100" role="main">
+        <div className="max-w-4xl mx-auto p-6 sm:p-8">
           {error && (
-            <Alert variant="error" className="mb-6">
+            <Alert variant="error" className="mb-6 sm:mb-8">
               <div className="flex items-center">
                 <span className="mr-2 text-xl">⚠️</span>
                 {error}
@@ -390,20 +344,22 @@ export const LifePlanWizard: React.FC<LifePlanWizardProps> = ({
             </Alert>
           )}
 
-          <Wizard
-            steps={wizardSteps}
-            currentStep={currentStep}
-            onStepChange={goToStep}
-            onNext={nextStep}
-            onPrev={prevStep}
-            onComplete={handleWizardComplete}
-            canGoNext={canGoNext}
-            canGoPrev={canGoPrev}
-            isLastStep={isLastStep}
-            progress={progress}
-          >
-            {getCurrentStepComponent()}
-          </Wizard>
+          <div className="bg-white rounded-xl shadow-xl p-6 sm:p-8">
+            <Wizard
+              steps={wizardSteps}
+              currentStep={currentStep}
+              onStepChange={goToStep}
+              onNext={nextStep}
+              onPrev={prevStep}
+              onComplete={handleWizardComplete}
+              canGoNext={canGoNext}
+              canGoPrev={canGoPrev}
+              isLastStep={isLastStep}
+              progress={progress}
+            >
+              {getCurrentStepComponent()}
+            </Wizard>
+          </div>
         </div>
       </div>
     </div>
