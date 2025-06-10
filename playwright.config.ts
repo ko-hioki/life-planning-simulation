@@ -33,7 +33,7 @@ export default defineConfig({
   // 全テスト共通の設定
   use: {
     // ベースURL（開発サーバーまたはビルド済みアプリ）
-    baseURL: 'http://localhost:4173', // vite preview用のポート
+    baseURL: 'http://localhost:4173/life-planning-simulation/', // GitHub Pages用のbase URLに対応
     
     // トレース設定（失敗時のみ）
     trace: 'on-first-retry',
@@ -82,7 +82,7 @@ export default defineConfig({
   // 開発サーバーの起動設定
   webServer: {
     command: 'yarn preview',
-    url: 'http://localhost:4173',
+    url: 'http://localhost:4173/life-planning-simulation/',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
