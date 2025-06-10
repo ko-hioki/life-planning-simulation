@@ -25,3 +25,10 @@ coverage/
 *.njsproj
 *.sln
 *.sw?
+
+# E2E test results
+/test-results/
+/playwright-report/
+
+# Debug files
+debug-validation.js

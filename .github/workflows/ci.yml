@@ -36,6 +36,12 @@ jobs:
     - name: Run tests
       run: yarn test:ci
       
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+      
+    - name: Run E2E tests
+      run: yarn test:e2e --project=chromium
+      
     - name: Upload test coverage
       uses: codecov/codecov-action@v3
       if: matrix.node-version == '22.x'
