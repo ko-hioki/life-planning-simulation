@@ -46,12 +46,22 @@ jobs:
       run: yarn preview &
       
     - name: Wait for server to be ready
-      run: npx wait-on http://localhost:4173/life-planning-simulation/ --timeout 60000
+      run: npx wait-on http://localhost:4173/life-planning-simulation/ --timeout 120000 --interval 2000
       
-    - name: Run E2E tests
-      run: yarn test:e2e:chromium
+    - name: Run E2E tests (All browsers)
+      run: yarn test:e2e
       env:
         CI: true
+        
+    - name: Upload E2E test results
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: e2e-test-results
+        path: |
+          test-results/
+          playwright-report/
+        retention-days: 3
       
     - name: Upload test coverage
       uses: codecov/codecov-action@v3
