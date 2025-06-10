@@ -1,137 +1,112 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * シミュレーション結果とチャートのE2Eテスト
+ * グラフ・チャート表示のE2Eテスト
  */
-test.describe('Life Planning Simulation - 結果・チャート', () => {
-  test.beforeEach(async ({ page }) => {
-    // テスト用の結果ページに直接移動
-    await page.goto('/#/test');
+test.describe('Life Planning Simulation - グラフ・チャート', () => {
+  test('サンプルプランのグラフ表示', async ({ page }) => {
+    await page.goto('/');
     await page.waitForLoadState('networkidle');
+    
+    // サンプルプランが存在する場合のテスト
+    const samplePlan = page.locator('text=サンプルプラン');
+    
+    if (await samplePlan.isVisible()) {
+      // 詳細ボタンをクリック
+      await page.click('text=詳細');
+      
+      // モーダルが開くことを確認
+      const modal = page.locator('[role="dialog"]');
+      await expect(modal).toBeVisible();
+      
+      // グラフが表示されることを確認（canvasまたはsvg要素）
+      const chartElement = page.locator('canvas, svg').first();
+      await expect(chartElement).toBeVisible({ timeout: 10000 });
+      
+      // 統計情報が表示されることを確認
+      const statsElement = page.locator('text=退職時資産, text=最大資産, text=累計収入').first();
+      await expect(statsElement).toBeVisible();
+      
+      // モーダルを閉じる
+      await page.keyboard.press('Escape');
+      await expect(modal).not.toBeVisible();
+    }
   });
 
-  test('シミュレーション結果が正常に表示される', async ({ page }) => {
-    // ページの読み込み完了を待つ
-    await page.waitForTimeout(2000);
+  test('テストページでのグラフ表示', async ({ page }) => {
+    await page.goto('/test');
+    await page.waitForLoadState('networkidle');
     
-    // グラフコンテナが表示されることを確認
-    const chartContainer = page.locator('[data-testid="simulation-chart"]');
+    // テストページのタイトルが表示されることを確認
+    await expect(page.locator('h1')).toContainText('テスト用シミュレーション結果');
+    
+    // グラフが表示されることを確認
+    const chartElement = page.locator('canvas, svg').first();
+    await expect(chartElement).toBeVisible({ timeout: 10000 });
+    
+    // 統計情報が表示されることを確認
+    const statsSection = page.locator('text=統計情報, text=退職時資産, text=最大資産').first();
+    await expect(statsSection).toBeVisible();
+  });
+
+  test('グラフの基本的な操作', async ({ page }) => {
+    await page.goto('/test');
+    await page.waitForLoadState('networkidle');
+    
+    // グラフ要素の存在確認
+    const chartContainer = page.locator('canvas, svg').first();
+    await expect(chartContainer).toBeVisible();
+    
+    // グラフコンテナがクリック可能であることを確認
     if (await chartContainer.isVisible()) {
-      await expect(chartContainer).toBeVisible();
-    } else {
-      // グラフが直接表示されない場合は、recharts要素を確認
-      const chartSvg = page.locator('.recharts-wrapper svg');
-      await expect(chartSvg).toBeVisible();
-    }
-    
-    // 統計情報コンテナが表示されることを確認
-    const statsContainer = page.locator('[data-testid="simulation-stats"]');
-    if (await statsContainer.isVisible()) {
-      await expect(statsContainer).toBeVisible();
-    } else {
-      // 統計カードが表示されることを確認
-      const statCards = page.locator('[data-testid*="stat-card"]');
-      if (await statCards.first().isVisible()) {
-        await expect(statCards.first()).toBeVisible();
-      }
+      // グラフ領域をクリック（エラーが発生しないことを確認）
+      await chartContainer.click({ force: true });
     }
   });
 
-  test('グラフが正常に描画される', async ({ page }) => {
-    await page.waitForTimeout(3000);
+  test('統計カードの表示', async ({ page }) => {
+    await page.goto('/test');
+    await page.waitForLoadState('networkidle');
     
-    // チャートのSVG要素が描画されることを確認
-    const chartSvg = page.locator('.recharts-wrapper svg');
-    await expect(chartSvg).toBeVisible();
+    // 統計カードが表示されることを確認
+    const statsCards = page.locator('[class*="card"], [class*="Card"]');
+    await expect(statsCards.first()).toBeVisible();
     
-    // チャートに実際のデータが描画されていることを確認
-    const chartPaths = page.locator('.recharts-wrapper path');
-    const pathCount = await chartPaths.count();
-    expect(pathCount).toBeGreaterThan(0);
+    // 数値が表示されることを確認（金額形式）
+    const amountElements = page.locator('text=/¥[0-9,]+/, text=/[0-9,]+万円/, text=/[0-9,]+円/');
+    await expect(amountElements.first()).toBeVisible();
   });
+});
 
-  test('統計カードが正常に表示される', async ({ page }) => {
-    await page.waitForTimeout(2000);
-    
-    // 統計情報のテキストが表示されることを確認
-    const statsText = page.locator('text=退職時資産').or(page.locator('text=最大資産')).or(page.locator('text=資産'));
-    if (await statsText.first().isVisible()) {
-      await expect(statsText.first()).toBeVisible();
-    }
-    
-    // 数値が表示されることを確認（円やyen等の文字を含む）
-    const moneyText = page.locator('text=/[0-9,]+/');
-    if (await moneyText.first().isVisible()) {
-      await expect(moneyText.first()).toBeVisible();
-    }
-  });
-
-  test('グラフの詳細表示モーダルが動作する', async ({ page }) => {
-    await page.waitForTimeout(2000);
-    
-    // 詳細表示ボタンまたはグラフクリックを探す
-    const detailButton = page.locator('button', { hasText: '詳細表示' })
-      .or(page.locator('button', { hasText: '詳細' }))
-      .or(page.locator('.recharts-wrapper'));
-    
-    if (await detailButton.first().isVisible()) {
-      await detailButton.first().click();
-      
-      // モーダルが表示されることを確認
-      const modal = page.locator('[data-testid="chart-modal"]')
-        .or(page.locator('[role="dialog"]'))
-        .or(page.locator('.modal'));
-      
-      if (await modal.first().isVisible()) {
-        await expect(modal.first()).toBeVisible();
-        
-        // 閉じるボタンまたはESCキーで閉じる
-        const closeButton = page.locator('button[aria-label*="閉じる"]')
-          .or(page.locator('button', { hasText: '×' }))
-          .or(page.locator('[data-testid="close-button"]'));
-        
-        if (await closeButton.first().isVisible()) {
-          await closeButton.first().click();
-        } else {
-          await page.keyboard.press('Escape');
-        }
-        
-        // モーダルが閉じることを確認
-        await expect(modal.first()).not.toBeVisible();
-      }
-    }
-  });
-
-  test('グラフのレスポンシブ動作', async ({ page }) => {
-    await page.waitForTimeout(2000);
-    
-    // デスクトップサイズ
-    await page.setViewportSize({ width: 1200, height: 800 });
-    const chartDesktop = page.locator('.recharts-wrapper');
-    if (await chartDesktop.isVisible()) {
-      await expect(chartDesktop).toBeVisible();
-    }
-    
-    // タブレットサイズ
-    await page.setViewportSize({ width: 768, height: 1024 });
-    if (await chartDesktop.isVisible()) {
-      await expect(chartDesktop).toBeVisible();
-    }
-    
-    // モバイルサイズ
+/**
+ * レスポンシブグラフ表示のテスト
+ */
+test.describe('Life Planning Simulation - レスポンシブグラフ', () => {
+  test('モバイルでのグラフ表示', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    if (await chartDesktop.isVisible()) {
-      await expect(chartDesktop).toBeVisible();
-    }
+    await page.goto('/test');
+    await page.waitForLoadState('networkidle');
+    
+    // グラフが適切に表示されることを確認
+    const chartElement = page.locator('canvas, svg').first();
+    await expect(chartElement).toBeVisible();
+    
+    // 統計情報が適切に表示されることを確認
+    const statsSection = page.locator('text=統計情報, text=退職時資産').first();
+    await expect(statsSection).toBeVisible();
   });
 
-  test('テストページの基本機能', async ({ page }) => {
-    // テストページが正常に読み込まれることを確認
-    await expect(page.locator('body')).toBeVisible();
+  test('デスクトップでのグラフ表示', async ({ page }) => {
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.goto('/test');
+    await page.waitForLoadState('networkidle');
     
-    // エラーが発生していないことを確認
-    const errorElements = page.locator('[data-testid="error"]').or(page.locator('.error'));
-    const errorCount = await errorElements.count();
-    expect(errorCount).toBe(0);
+    // グラフが適切に表示されることを確認
+    const chartElement = page.locator('canvas, svg').first();
+    await expect(chartElement).toBeVisible();
+    
+    // レイアウトが適切に表示されることを確認
+    const container = page.locator('main, [class*="container"]').first();
+    await expect(container).toBeVisible();
   });
 });

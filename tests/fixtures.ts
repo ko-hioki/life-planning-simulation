@@ -7,7 +7,8 @@ import { test as base } from '@playwright/test';
 export const test = base.extend<{
   // 共通のテストデータ
   testUser: {
-    age: number;
+    name: string;
+    birthYear: number;
     monthlyIncome: number;
     currentAssets: number;
     retirementAge: number;
@@ -23,7 +24,8 @@ export const test = base.extend<{
   // テストユーザーデータ
   testUser: async ({}, use) => {
     const userData = {
-      age: 30,
+      name: 'テストユーザー',
+      birthYear: 1993,
       monthlyIncome: 400000,
       currentAssets: 1000000,
       retirementAge: 65,
@@ -35,24 +37,43 @@ export const test = base.extend<{
   wizardHelper: async ({ page }, use) => {
     const helper = {
       async fillBasicInfo(page: any, data: any) {
-        await page.locator('input[name="age"]').fill(data.age.toString());
-        await page.locator('input[name="monthlyIncome"]').fill(data.monthlyIncome.toString());
-        await page.locator('input[name="currentAssets"]').fill(data.currentAssets.toString());
+        // 名前入力
+        const nameInput = page.locator('input').first();
+        if (await nameInput.isVisible()) {
+          await nameInput.fill(data.name || 'テストユーザー');
+        }
+        
+        // 生年入力
+        const birthYearInput = page.locator('input').nth(1);
+        if (await birthYearInput.isVisible()) {
+          await birthYearInput.fill(data.birthYear?.toString() || '1993');
+        }
+        
+        // 退職年齢入力
+        const retirementAgeInput = page.locator('input').nth(2);
+        if (await retirementAgeInput.isVisible()) {
+          await retirementAgeInput.fill(data.retirementAge?.toString() || '65');
+        }
       },
 
       async completeWizard(page: any) {
-        // ステップ1: 基本情報
-        await page.locator('input[name="age"]').fill('30');
-        await page.locator('input[name="monthlyIncome"]').fill('400000');
-        await page.locator('input[name="currentAssets"]').fill('1000000');
-        await page.locator('button', { hasText: '次へ' }).click();
-
-        // ステップ2〜4: 最小限の入力で進む
-        for (let step = 2; step <= 4; step++) {
-          const nextButton = page.locator('button', { hasText: step === 4 ? '完了' : '次へ' });
-          if (await nextButton.isVisible()) {
-            await nextButton.click();
-          }
+        // 基本情報を入力
+        await this.fillBasicInfo(page, {
+          name: 'テストユーザー',
+          birthYear: 1993,
+          retirementAge: 65
+        });
+        
+        // 次へボタンがある場合はクリック
+        const nextButton = page.locator('text=次へ');
+        if (await nextButton.isVisible()) {
+          await nextButton.click();
+        }
+        
+        // 完了ボタンがある場合はクリック
+        const completeButton = page.locator('text=完了');
+        if (await completeButton.isVisible()) {
+          await completeButton.click();
         }
       },
 

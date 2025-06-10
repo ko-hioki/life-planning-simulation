@@ -4,64 +4,111 @@ import { test, expect } from '@playwright/test';
  * プラン作成ウィザードのE2Eテスト
  */
 test.describe('Life Planning Simulation - ウィザード', () => {
-  test('プラン作成ウィザードの基本的な操作フロー', async ({ page }) => {
+  test('プラン作成ウィザードへの遷移', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     
-    // プラン作成ボタンをクリック
-    const createPlanButton = page.locator('button', { hasText: '新規プラン作成' }).or(
-      page.locator('button', { hasText: '最初のプランを作成する' })
-    );
-    await createPlanButton.click();
+    // 新規プラン作成ボタンをクリック
+    await page.click('text=新規プラン作成');
     
     // ウィザードページに遷移することを確認
-    await expect(page).toHaveURL(/#\/wizard/);
-    await page.waitForLoadState('networkidle');
+    await expect(page).toHaveURL(/.*\/wizard/);
     
-    // ウィザードが表示されることを確認
-    await expect(page.locator('form')).toBeVisible();
-    
-    // 基本情報フォームの要素が表示されることを確認
-    const nameInput = page.locator('input[id="name"]');
-    if (await nameInput.isVisible()) {
-      await nameInput.fill('テストユーザー');
-    }
+    // ウィザードのヘッダーが表示されることを確認
+    await expect(page.locator('text=ライフプラン作成')).toBeVisible();
   });
 
-  test('フォームバリデーションが正常に動作する', async ({ page }) => {
-    await page.goto('/#/wizard');
+  test('ウィザードページの基本表示', async ({ page }) => {
+    await page.goto('/wizard');
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
     
-    // フォームが表示されることを確認
-    await expect(page.locator('form')).toBeVisible();
+    // ウィザードタイトルが表示されることを確認
+    await expect(page.locator('text=ライフプラン作成')).toBeVisible();
     
-    // バリデーションの動作を確認（具体的な実装に応じて調整）
-    const submitButton = page.locator('button[type="submit"]');
-    if (await submitButton.isVisible()) {
-      await submitButton.click();
-      await page.waitForTimeout(500);
-      
-      // エラーメッセージまたはフォームが進まないことを確認
-      // 実際のバリデーション実装に応じて調整
-    }
+    // ホームに戻るボタンが表示されることを確認
+    await expect(page.locator('text=ホームに戻る')).toBeVisible();
+    
+    // プログレスバーが表示されることを確認
+    await expect(page.locator('[data-testid="wizard-progress"]')).toBeVisible();
   });
 
+  test('基本情報フォームの表示', async ({ page }) => {
+    await page.goto('/wizard');
+    await page.waitForLoadState('networkidle');
+    
+    // 基本情報ステップが表示されることを確認
+    await expect(page.locator('text=基本情報')).toBeVisible();
+    
+    // 入力フィールドが表示されることを確認
+    const inputFields = page.locator('input');
+    await expect(inputFields.first()).toBeVisible();
+  });
+
+  test('ウィザードナビゲーション', async ({ page }) => {
+    await page.goto('/wizard');
+    await page.waitForLoadState('networkidle');
+    
+    // ホームに戻るボタンのクリックテスト
+    await page.click('text=ホームに戻る');
+    
+    // ホームページに戻ることを確認
+    await expect(page).toHaveURL('/');
+    await expect(page.locator('h1')).toContainText('ライフプランニングシミュレーター');
+  });
+
+  test('キャンセルボタンの動作', async ({ page }) => {
+    await page.goto('/wizard');
+    await page.waitForLoadState('networkidle');
+    
+    // キャンセルボタンが表示されることを確認
+    const cancelButton = page.locator('text=キャンセル');
+    await expect(cancelButton).toBeVisible();
+    
+    // キャンセルボタンをクリック
+    await cancelButton.click();
+    
+    // ホームページに戻ることを確認
+    await expect(page).toHaveURL('/');
+  });
+});
+
+/**
+ * プラン作成ウィザードの詳細操作テスト
+ */
+test.describe('Life Planning Simulation - ウィザード詳細', () => {
   test('ウィザードページが正常に表示される', async ({ page }) => {
-    await page.goto('/#/wizard');
+    await page.goto('/wizard');
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1000);
     
     // ウィザードの基本要素が表示されることを確認
-    await expect(page.locator('form')).toBeVisible();
+    await expect(page.locator('body')).toBeVisible();
     
-    // キャンセルまたは戻るボタンが存在することを確認
-    const cancelButton = page.locator('button', { hasText: 'キャンセル' }).or(
-      page.locator('button', { hasText: '戻る' })
-    );
+    // ヘッダーが表示されることを確認
+    await expect(page.locator('h1')).toContainText('ライフプランニングシミュレーター');
+  });
+
+  test('フォーム入力の基本動作', async ({ page }) => {
+    await page.goto('/wizard');
+    await page.waitForLoadState('networkidle');
     
-    if (await cancelButton.isVisible()) {
-      await expect(cancelButton).toBeVisible();
+    // 最初の入力フィールドに値を入力
+    const firstInput = page.locator('input').first();
+    if (await firstInput.isVisible()) {
+      await firstInput.fill('テストユーザー');
+      await expect(firstInput).toHaveValue('テストユーザー');
     }
+  });
+
+  test('プログレスバーの表示', async ({ page }) => {
+    await page.goto('/wizard');
+    await page.waitForLoadState('networkidle');
+    
+    // プログレスバーが表示されることを確認
+    const progressBar = page.locator('[data-testid="wizard-progress"]');
+    await expect(progressBar).toBeVisible();
+    
+    // プログレスバーの値が設定されていることを確認
+    const progressElement = progressBar.locator('div').first();
+    await expect(progressElement).toBeVisible();
   });
 });

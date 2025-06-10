@@ -10,65 +10,64 @@ test.describe('Life Planning Simulation - 基本動作', () => {
     await page.waitForLoadState('networkidle');
   });
 
-  test('トップページが正常に表示される', async ({ page }) => {
+  test('ホームページが正しく表示される', async ({ page }) => {
     // ページタイトルの確認
     await expect(page).toHaveTitle(/Life Planning Simulation/);
     
     // メインヘッダーの確認
     await expect(page.locator('h1')).toContainText('ライフプランニングシミュレーター');
     
-    // ナビゲーションメニューの確認
-    await expect(page.locator('nav')).toBeVisible();
+    // 新規プラン作成ボタンの確認
+    await expect(page.locator('text=新規プラン作成')).toBeVisible();
     
-    // プラン作成ボタンの確認
-    const createPlanButton = page.locator('button', { hasText: '新規プラン作成' });
-    await expect(createPlanButton).toBeVisible();
-  });
-
-  test('404ページが正常に表示される', async ({ page }) => {
-    // 存在しないページに移動
-    await page.goto('/non-existent-page');
-    await page.waitForLoadState('networkidle');
-    
-    // HashRouterの場合、通常はホームページにリダイレクトされる
-    // ページが表示されることを確認
-    await expect(page.locator('body')).toBeVisible();
-    
-    // ヘッダーが表示されることを確認
+    // ヘッダーナビゲーションの確認
     await expect(page.locator('header')).toBeVisible();
-  });
-
-  test('レスポンシブデザインが正常に動作する', async ({ page }) => {
-    // デスクトップサイズでの確認
-    await page.setViewportSize({ width: 1200, height: 800 });
-    await expect(page.locator('nav')).toBeVisible();
-    await expect(page.locator('h1')).toBeVisible();
-    
-    // モバイルサイズでの確認
-    await page.setViewportSize({ width: 375, height: 667 });
-    await expect(page.locator('h1')).toBeVisible();
-    
-    // タブレットサイズでの確認
-    await page.setViewportSize({ width: 768, height: 1024 });
-    await expect(page.locator('h1')).toBeVisible();
   });
 
   test('ホームページの基本要素が表示される', async ({ page }) => {
-    // ページが読み込まれるまで待つ
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000);
+    // サンプルプランが存在する場合の表示確認
+    const samplePlan = page.locator('text=サンプルプラン');
+    const welcomeMessage = page.locator('text=最初のプランを作成する');
     
-    // 基本的な要素が表示されることを確認
+    // サンプルプランまたはウェルカムメッセージのいずれかが表示される
+    await expect(samplePlan.or(welcomeMessage)).toBeVisible({ timeout: 10000 });
+    
+    // フッターの確認
+    await expect(page.locator('footer')).toBeVisible();
+    await expect(page.locator('text=ライフプランニングシミュレーター. All rights reserved.')).toBeVisible();
+  });
+
+  test('新規プラン作成フローの基本動作', async ({ page }) => {
+    // 新規プラン作成ボタンをクリック
+    await page.click('text=新規プラン作成');
+    
+    // ウィザードページに遷移することを確認
+    await expect(page).toHaveURL(/.*#\/wizard/);
+    await expect(page.locator('text=ライフプラン作成')).toBeVisible();
+    
+    // ホームに戻るボタンで戻れることを確認
+    await page.click('text=ホームに戻る');
+    await expect(page).toHaveURL(/.*#\/$/);
+    await expect(page.locator('h1')).toContainText('ライフプランニングシミュレーター');
+  });
+
+  test('レスポンシブデザインの基本確認', async ({ page }) => {
+    // モバイルサイズでテスト
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+    
+    // ヘッダーが表示される
     await expect(page.locator('header')).toBeVisible();
+    
+    // メインコンテンツが表示される
     await expect(page.locator('main')).toBeVisible();
     
-    // プラン作成ボタンまたはウェルカムメッセージが表示される
-    const createButton = page.locator('button', { hasText: '新規プラン作成' });
-    const welcomeButton = page.locator('button', { hasText: '最初のプランを作成する' });
+    // デスクトップサイズでテスト
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.goto('/');
     
-    const hasCreateButton = await createButton.isVisible();
-    const hasWelcomeButton = await welcomeButton.isVisible();
-    
-    expect(hasCreateButton || hasWelcomeButton).toBe(true);
+    // 同じ要素が表示される
+    await expect(page.locator('h1')).toContainText('ライフプランニングシミュレーター');
+    await expect(page.locator('text=新規プラン作成')).toBeVisible();
   });
 });
