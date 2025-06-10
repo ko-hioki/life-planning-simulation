@@ -22,7 +22,7 @@ export const test = base.extend<{
   };
 }>({
   // テストユーザーデータ
-  testUser: async ({}, use) => {
+  testUser: async ({ }, use) => {
     const userData = {
       name: 'テストユーザー',
       birthYear: 1993,
@@ -34,7 +34,7 @@ export const test = base.extend<{
   },
 
   // ウィザードヘルパー
-  wizardHelper: async ({ page }, use) => {
+  wizardHelper: async ({ }, use) => {
     const helper = {
       async fillBasicInfo(page: any, data: any) {
         // 名前入力
