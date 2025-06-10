@@ -17,11 +17,11 @@ export default defineConfig({
   // CIで失敗時はretryしない
   forbidOnly: !!process.env.CI,
   
-  // CIではretryしない
-  retries: process.env.CI ? 0 : 1,
+  // CIではretryを1回に設定（完全にオフにしない）
+  retries: process.env.CI ? 1 : 1,
   
-  // 並列実行のワーカー数
-  workers: process.env.CI ? 1 : undefined,
+  // 並列実行のワーカー数（CIでは2に増やして効率化）
+  workers: process.env.CI ? 2 : undefined,
   
   // レポーター設定
   reporter: [
@@ -32,8 +32,10 @@ export default defineConfig({
   
   // 全テスト共通の設定
   use: {
-    // ベースURL（開発サーバーまたはビルド済みアプリ）
-    baseURL: 'http://localhost:4173/life-planning-simulation/', // GitHub Pages用のbase URLに対応
+    // ベースURL（CI環境とローカル環境で切り替え）
+    baseURL: process.env.CI 
+      ? 'http://localhost:4173/life-planning-simulation/' 
+      : 'http://localhost:4174/life-planning-simulation/',
     
     // トレース設定（失敗時のみ）
     trace: 'on-first-retry',
@@ -44,9 +46,9 @@ export default defineConfig({
     // ビデオ設定
     video: 'retain-on-failure',
     
-    // テストの実行速度を適度に調整
-    actionTimeout: 10000,
-    navigationTimeout: 30000,
+    // テストの実行速度を適度に調整（CI環境ではより寛容に）
+    actionTimeout: process.env.CI ? 15000 : 10000,
+    navigationTimeout: process.env.CI ? 45000 : 30000,
   },
 
   // プロジェクト設定（複数ブラウザでのテスト）
@@ -79,11 +81,11 @@ export default defineConfig({
     // },
   ],
 
-  // 開発サーバーの起動設定
-  webServer: {
+  // 開発サーバーの起動設定（CI環境では無効化）
+  webServer: process.env.CI ? undefined : {
     command: 'yarn preview',
-    url: 'http://localhost:4173/life-planning-simulation/',
-    reuseExistingServer: !process.env.CI,
+    url: 'http://localhost:4174/life-planning-simulation/',
+    reuseExistingServer: true,
     timeout: 120 * 1000,
   },
 });

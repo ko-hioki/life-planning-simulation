@@ -44,14 +44,23 @@ jobs:
       
     - name: Start preview server for E2E tests
       run: yarn preview &
+      env:
+        PORT: 4173
       
     - name: Wait for server to be ready
-      run: npx wait-on http://localhost:4173/life-planning-simulation/ --timeout 120000 --interval 2000
+      run: |
+        npx wait-on http://localhost:4173/life-planning-simulation/ --timeout 120000 --interval 2000
+        curl -f http://localhost:4173/life-planning-simulation/ || exit 1
       
     - name: Run E2E tests (All browsers)
-      run: yarn test:e2e
+      run: |
+        echo "Starting E2E tests..."
+        echo "Base URL: http://localhost:4173/life-planning-simulation/"
+        yarn test:e2e --reporter=line
       env:
         CI: true
+        BASE_URL: http://localhost:4173/life-planning-simulation/
+        DEBUG: pw:api
         
     - name: Upload E2E test results
       uses: actions/upload-artifact@v4
