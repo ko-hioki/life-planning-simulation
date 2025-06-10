@@ -19,10 +19,10 @@ const StatisticCard: React.FC<StatisticCardProps> = ({
   icon,
 }) => {
   const colorClasses = {
-    default: 'bg-white text-gray-900 border-gray-200 shadow-sm',
-    success: 'bg-green-50 text-green-900 border-green-200 shadow-sm',
-    warning: 'bg-yellow-50 text-yellow-900 border-yellow-200 shadow-sm',
-    error: 'bg-red-50 text-red-900 border-red-200 shadow-sm',
+    default: 'bg-white text-gray-900 border-gray-200 shadow-sm border',
+    success: 'bg-green-50 text-green-900 border-green-200 shadow-sm border',
+    warning: 'bg-yellow-50 text-yellow-900 border-yellow-200 shadow-sm border',
+    error: 'bg-red-50 text-red-900 border-red-200 shadow-sm border',
   };
 
   return (
@@ -140,8 +140,8 @@ export const SimulationStats: React.FC<SimulationStatsProps> = ({
   const retirementColor = getFinancialHealthColor(retirementReadiness);
 
   return (
-    <div className="space-y-6 bg-white p-4 rounded-lg">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="space-y-6 bg-white p-6 rounded-lg border border-gray-100 shadow-sm">
+      <div className="bg-white grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatisticCard
           title="最終資産"
           value={formatCurrency(stats.finalAssets)}
@@ -177,7 +177,7 @@ export const SimulationStats: React.FC<SimulationStatsProps> = ({
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="bg-white grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-lg border border-gray-100">
         <StatisticCard
           title="総支出"
           value={formatCurrency(stats.totalExpenses)}
@@ -241,7 +241,7 @@ export const SimulationStats: React.FC<SimulationStatsProps> = ({
       )}
 
       {/* 詳細分析セクション */}
-      <div className="mt-8">
+      <div className="mt-8 bg-white p-4 rounded-lg border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">詳細分析</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatisticCard
